@@ -66,7 +66,7 @@ const Nav = () => {
         >
           <CiUser size={20} />
         </div>
-        <div className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-400/20">
+        <div onClick={() => navigate("/cart")} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-400/20">
           <FaOpencart size={20} />
         </div>
         <div

@@ -1,5 +1,4 @@
 const Card = ({ item }) => {
-  console.log(item)
   return (
     <div className="w-full h-75 md:h-100  flex flex-col">
       <img src={item.image} alt={item.title} className="h-[80%] object-cover" />
