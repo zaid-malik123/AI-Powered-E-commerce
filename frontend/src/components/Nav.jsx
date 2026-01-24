@@ -7,7 +7,7 @@ import { useState } from "react";
 import { IoIosLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios"
+import axios from "axios";
 import { setUser } from "../redux/features/userSlice";
 import SmartSearch from "./SmartSearch";
 
@@ -17,13 +17,16 @@ const Nav = () => {
   const [profile, setProfile] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const {user} = useSelector(state => state.userSlice)
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.userSlice);
+  const { cart } = useSelector((state) => state.cartSlice);
 
   const logoutHandler = async () => {
-    await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/logout`, {withCredentials:true})
-    dispatch(setUser(null))
-  }
+    await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/logout`, {
+      withCredentials: true,
+    });
+    dispatch(setUser(null));
+  };
   return (
     <div
       className={`flex w-full items-center justify-between py-3 ${
@@ -66,8 +69,19 @@ const Nav = () => {
         >
           <CiUser size={20} />
         </div>
-        <div onClick={() => navigate("/cart")} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-400/20">
+        <div
+          onClick={() => navigate("/cart")}
+          className="relative w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-400/20"
+        >
+          {/* Cart Icon */}
           <FaOpencart size={20} />
+
+          {/* Cart Count Badge */}
+          {cart.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+              {cart.length}
+            </span>
+          )}
         </div>
         <div
           onClick={() => {
@@ -77,8 +91,6 @@ const Nav = () => {
         >
           <CiMenuBurger size={20} />
         </div>
-
-        
       </div>
 
       {searchOpen && (
@@ -127,23 +139,26 @@ const Nav = () => {
 
           {/* Extra actions */}
 
-          <div onClick={logoutHandler} className="absolute bottom-10 flex items-center gap-2 ">
+          <div
+            onClick={logoutHandler}
+            className="absolute bottom-10 flex items-center gap-2 "
+          >
             <IoIosLogOut size={20} className="text-red-600" />
             <span className="text-red-500">LogOut</span>
           </div>
         </div>
       </div>
-      { profile && (
+      {profile && (
         <div
           className="absolute right-6 top-14 w-56 bg-white rounded-xl shadow-lg z-50
     p-4 flex flex-col gap-3"
         >
           {/* User Info */}
           <div className="flex flex-col gap-1">
-            <h3 className="text-sm font-semibold text-gray-800">{user?.name}</h3>
-            <p className="text-xs text-gray-500 truncate">
-              {user?.email}
-            </p>
+            <h3 className="text-sm font-semibold text-gray-800">
+              {user?.name}
+            </h3>
+            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
           </div>
 
           <div className="h-px bg-gray-200" />
@@ -157,21 +172,26 @@ const Nav = () => {
               <span>My Orders</span>
             </button>
 
-            {
-              !user ? 
+            {!user ? (
               <button
-              onClick={() => navigate("/login")}
-              className="flex items-center gap-2 text-sm text-gray-700
+                onClick={() => navigate("/login")}
+                className="flex items-center gap-2 text-sm text-gray-700
         hover:bg-gray-100 px-2 py-1 rounded-md"
-            >
-              <CiUser size={16} />
-              <span>Login</span>
-            </button> : <div onClick={logoutHandler} className="text-red-600 font-semibold ml-2 hidden md:block cursor-pointer">Log Out</div>
-            }
+              >
+                <CiUser size={16} />
+                <span>Login</span>
+              </button>
+            ) : (
+              <div
+                onClick={logoutHandler}
+                className="text-red-600 font-semibold ml-2 hidden md:block cursor-pointer"
+              >
+                Log Out
+              </div>
+            )}
           </div>
         </div>
       )}
-
     </div>
   );
 };

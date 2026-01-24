@@ -7,6 +7,7 @@ import Collection from "../pages/Collection"
 import Login from "../pages/Login"
 import Signup from "../pages/Signup"
 import ProductDetail from "../pages/ProductDetail"
+import CheckOut from "../pages/CheckOut"
 
 const AppRoutes = () => {
   return (
@@ -19,7 +20,8 @@ const AppRoutes = () => {
             <Route path="/collection" element={<Collection/>}></Route>
             <Route path="/product/:id" element={<ProductDetail/>}></Route>
             <Route path="/login" element={<Login/>}></Route>
-            <Route path="/signup" element={<Signup/>}></Route>        
+            <Route path="/signup" element={<Signup/>}></Route>
+            <Route path="/checkout" element={<CheckOut/>}></Route>   
         </Routes>
     </div>
   )
