@@ -79,12 +79,14 @@ export const useCart = () => {
       );
 
       if (response.data.success) {
+        // Re-fetch cart to get updated data
         await fetchCart();
         return { success: true };
       }
+      return { success: false, message: "Failed to update" };
     } catch (err) {
       console.error("Error updating cart:", err);
-      return { success: false, message: err.response?.data?.message };
+      return { success: false, message: err.response?.data?.message || err.message };
     }
   };
 
@@ -100,12 +102,14 @@ export const useCart = () => {
       );
 
       if (response.data.success) {
-        dispatch(removeCartItem(productId));
+        // Re-fetch cart to get updated data
+        await fetchCart();
         return { success: true };
       }
+      return { success: false, message: "Failed to remove item" };
     } catch (err) {
       console.error("Error removing from cart:", err);
-      return { success: false, message: err.response?.data?.message };
+      return { success: false, message: err.response?.data?.message || err.message };
     }
   };
 
@@ -113,17 +117,19 @@ export const useCart = () => {
   const clearCartItems = async () => {
     try {
       const response = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/api/cart/clear`,
+        `${import.meta.env.VITE_BASE_URL}/api/cart/remove-all-cart`,
         { withCredentials: true }
       );
 
       if (response.data.success) {
+        // Clear Redux store
         dispatch(clearCart());
         return { success: true };
       }
+      return { success: false, message: "Failed to clear cart" };
     } catch (err) {
       console.error("Error clearing cart:", err);
-      return { success: false, message: err.response?.data?.message };
+      return { success: false, message: err.response?.data?.message || err.message };
     }
   };
 

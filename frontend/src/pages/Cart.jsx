@@ -21,28 +21,33 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [hasCheckedUser, setHasCheckedUser] = useState(false);
 
   // Fetch cart on mount or when user changes
   useEffect(() => {
     const initCart = async () => {
       setIsInitializing(true);
+      
+      // Give app time to load user state on first mount
+      if (!hasCheckedUser) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        setHasCheckedUser(true);
+      }
+
       if (user) {
         console.log("User found, fetching cart...", user);
         await fetchCart();
-      } else {
-        console.log("No user, will redirect to login");
-        // Small delay to ensure user state is fully initialized
-        setTimeout(() => {
-          if (!user) {
-            navigate("/login");
-          }
-        }, 500);
+        setIsInitializing(false);
+      } else if (hasCheckedUser) {
+        // Only redirect after we've confirmed user doesn't exist
+        console.log("No user found, redirecting to login");
+        setIsInitializing(false);
+        navigate("/login");
       }
-      setIsInitializing(false);
     };
 
     initCart();
-  }, [user, fetchCart, navigate]);
+  }, [user, fetchCart, navigate, hasCheckedUser]);
 
   // Update local state when cart changes
   useEffect(() => {
