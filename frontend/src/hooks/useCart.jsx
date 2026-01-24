@@ -21,7 +21,6 @@ export const useCart = () => {
         { withCredentials: true }
       );
 
-      console.log("Cart response:", response.data);
 
       if (response.data.success) {
         // Backend returns { success, cart: { items, userId, _id, ... } }
