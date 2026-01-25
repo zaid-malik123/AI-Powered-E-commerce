@@ -68,7 +68,7 @@ const Collection = () => {
   };
 
   return (
-    <div className="w-full h-full mt-10 flex flex-col px-4 md:px-10">
+    <div className="w-full min-h-screen mt-10 flex flex-col px-4 md:px-10">
       {/* <div className="mb-8">
         <SmartSearch onResultsChange={handleSearchResults} />
       </div> */}

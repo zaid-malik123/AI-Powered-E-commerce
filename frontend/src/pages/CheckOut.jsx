@@ -1,6 +1,6 @@
 const CheckOut = () => {
   return (
-    <div className="h-full w-full mt-10">
+    <div className="min-h-screen w-full mt-10">
       <div className="flex items-center gap-3">
         <h1 className="md:text-3xl text-xl text-gray-500 font-mono">
           DELIVERY <span className="font-bold text-black">INFORMATION</span>

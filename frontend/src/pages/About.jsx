@@ -2,7 +2,7 @@ import AboutImage from "../assets/About.png"
 
 const About = () => {
   return (
-    <div className="w-full">
+    <div className="w-full min-h-screen">
 
       {/* ABOUT US SECTION */}
       <section className="max-w-6xl mx-auto px-4 py-16">
