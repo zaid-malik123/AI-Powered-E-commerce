@@ -8,6 +8,7 @@ import Login from "../pages/Login"
 import Signup from "../pages/Signup"
 import ProductDetail from "../pages/ProductDetail"
 import CheckOut from "../pages/CheckOut"
+import OrderConfirm from "../pages/OrderConfirm"
 
 const AppRoutes = () => {
   return (
@@ -21,7 +22,8 @@ const AppRoutes = () => {
             <Route path="/product/:id" element={<ProductDetail/>}></Route>
             <Route path="/login" element={<Login/>}></Route>
             <Route path="/signup" element={<Signup/>}></Route>
-            <Route path="/checkout" element={<CheckOut/>}></Route>   
+            <Route path="/checkout" element={<CheckOut/>}></Route>
+            <Route path="/confirm" element={<OrderConfirm/>}></Route>   
         </Routes>
     </div>
   )
