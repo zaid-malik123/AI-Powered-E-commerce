@@ -60,7 +60,7 @@ const CheckOut = () => {
         <h1 className="md:text-3xl text-xl text-gray-500 font-mono">
           DELIVERY <span className="font-bold text-black">INFORMATION</span>
         </h1>
-        <div className="w-50 h-0.5 bg-black"></div>
+        <div className="md:w-30 w-20 h-0.5 bg-black"></div>
       </div>
 
       <div className="w-full md:w-[90%] grid grid-cols-1 md:grid-cols-2 gap-20">
@@ -189,7 +189,7 @@ const CheckOut = () => {
             <h1 className="text-2xl text-gray-500 font-mono">
               CART <span className="font-bold text-gray-600">TOTALS</span>
             </h1>
-            <div className="w-50 h-0.5 bg-black"></div>
+            <div className="md:w-30 w-20 h-0.5 bg-black"></div>
           </div>
 
           <div className="flex justify-between items-center mt-5">
@@ -218,7 +218,7 @@ const CheckOut = () => {
               <h1 className="text-md text-gray-500 font-mono">
                 PAYMENT <span className="font-bold text-gray-600">METHOD</span>
               </h1>
-              <div className="w-50 h-0.5 bg-black"></div>
+              <div className="md:w-30 w-20 h-0.5 bg-black"></div>
             </div>
 
             <div className="flex gap-5 mt-5">

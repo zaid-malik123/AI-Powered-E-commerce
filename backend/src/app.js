@@ -7,6 +7,7 @@ import UserRoutes from "./routes/user.routes.js"
 import ProductRoutes from "./routes/product.routes.js"
 import AIRoutes from "./routes/ai.routes.js"
 import CartRoutes from "./routes/cart.routes.js"
+import OrderRoutes from "./routes/order.routes.js"
 
 const app = express()
 
@@ -26,6 +27,7 @@ app.use("/api/user", UserRoutes)
 app.use("/api/product", ProductRoutes)
 app.use("/api/ai", AIRoutes)
 app.use("/api/cart", CartRoutes)
+app.use("/api/order", OrderRoutes)
 
 
 export default app;
