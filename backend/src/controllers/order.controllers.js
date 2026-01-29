@@ -4,8 +4,9 @@ import Order from "../models/order.model.js";
 export const createOrder = async (req, res) => {
   try {
     const userId = req.user._id;
+    
 
-    const { items, address, paymentMethod } = req.body;
+    const { items, address, paymentMethod, totalAmount } = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
@@ -15,9 +16,6 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ message: "Address is required" });
     }
 
-    const totalAmount = items.reduce((total, item) => {
-      return total + item.price * item.quantity;
-    }, 0);
 
     const order = await Order.create({
       user: userId,

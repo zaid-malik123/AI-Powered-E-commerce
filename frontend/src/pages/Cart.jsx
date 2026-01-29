@@ -7,6 +7,7 @@ import axios from "axios";
 
 const Cart = () => {
   const navigate = useNavigate();
+
   const { user } = useSelector((state) => state.userSlice);
   const {
     cart,
@@ -15,7 +16,6 @@ const Cart = () => {
     updateQuantity,
     removeFromCart,
     clearCartItems,
-    getCartTotal,
   } = useCart();
 
   const [cartItems, setCartItems] = useState([]);

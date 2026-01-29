@@ -1,8 +1,10 @@
 import { FaCheckCircle } from "react-icons/fa";
 import { MdOutlineLocalShipping } from "react-icons/md";
 import { HiOutlineReceiptRefund } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 
 const OrderConfirm = () => {
+  const navigate = useNavigate();
   return (
     <div className="h-screen flex items-center justify-center bg-white px-4">
       <div className="max-w-md w-full border border-gray-200 rounded-xl p-8 text-center">
@@ -51,7 +53,7 @@ const OrderConfirm = () => {
         </div>
 
         {/* BUTTON */}
-        <button className="w-full py-3 bg-black text-white text-sm tracking-wide hover:bg-gray-800 transition">
+        <button onClick={() => navigate("/")} className="w-full py-3 bg-black text-white text-sm tracking-wide hover:bg-gray-800 transition">
           CONTINUE SHOPPING
         </button>
       </div>

@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setCart, removeCartItem, clearCart } from "../redux/features/cartSlice";
+import { setCart, removeCartItem, clearCart, setCartTotal } from "../redux/features/cartSlice";
 
 export const useCart = () => {
   const [loading, setLoading] = useState(false);
@@ -134,7 +134,9 @@ export const useCart = () => {
 
   // Get cart total
   const getCartTotal = () => {
-    return cart.reduce((total, item) => total + item.priceAtThatTime * item.quantity, 0);
+    const total = cart.reduce((total, item) => total + item.priceAtThatTime * item.quantity, 0);
+    dispatch(setCartTotal(total));
+    return total;
   };
 
   // Get cart item count

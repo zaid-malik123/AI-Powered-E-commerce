@@ -8,9 +8,9 @@ const router = express.Router()
 
 router.post("/create", upload.single("image"),isAuth, isAdmin, createProductController )
 
-router.get("/all", isAuth, getAllProducts)
+router.get("/all", getAllProducts)
 
-router.post("/filter", isAuth, filterProducts)
+router.post("/filter", filterProducts)
 
 router.get("/:id", isAuth, getSingleProduct)
 

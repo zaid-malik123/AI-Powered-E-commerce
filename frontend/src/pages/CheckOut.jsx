@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { checkoutform } from "../validator/formValidator";
 import { useSelector } from "react-redux";
 import useCart from "../hooks/useCart";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CheckOut = () => {
   const [paymentMethod, setPaymentMethod] = useState("online");
@@ -11,6 +13,12 @@ const CheckOut = () => {
 
   const { user } = useSelector((state) => state.userSlice);
   const { cart, getCartTotal } = useCart();
+
+  const navigate = useNavigate()
+
+  const totalAmount = cart.reduce((total, item) => {
+    return total + item.priceAtThatTime * item.quantity;
+  }, 0);
 
   const {
     register,
@@ -33,26 +41,28 @@ const CheckOut = () => {
   });
 
   const onSubmit = async (data) => {
-    setIsSubmitting(true);
-    try {
-      // TODO: Send order to backend
-      console.log("Order Data:", {
-        ...data,
-        paymentMethod,
+    if (paymentMethod === "cod") {
+   
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/order/cod`, {
         items: cart,
-        total: getCartTotal(),
-      });
-      
-      // Simulate order placement
-      alert("Order placed successfully!");
-      reset();
-    } catch (error) {
-      console.error("Error placing order:", error);
-      alert("Failed to place order");
-    } finally {
-      setIsSubmitting(false);
+        address: {
+          street: data.street,
+          city: data.city,
+          state: data.state,
+          zipcode: data.zipcode,
+          country: data.country,
+        },
+        totalAmount: totalAmount,
+        paymentMethod: "cod",
+      }, {withCredentials: true});
+
+      navigate("/confirm")
     }
+    
+    
   };
+
+  
 
   return (
     <div className="min-h-screen w-full mt-10">
@@ -235,9 +245,9 @@ const CheckOut = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setPaymentMethod("cash")}
+                onClick={() => setPaymentMethod("cod")}
                 className={`px-5 py-2 rounded-md transition ${
-                  paymentMethod === "cash"
+                  paymentMethod === "cod"
                     ? "bg-black text-white"
                     : "border border-gray-300 text-gray-600"
                 }`}
