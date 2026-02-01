@@ -8,6 +8,7 @@ import ProductRoutes from "./routes/product.routes.js"
 import AIRoutes from "./routes/ai.routes.js"
 import CartRoutes from "./routes/cart.routes.js"
 import OrderRoutes from "./routes/order.routes.js"
+import PaymentRoutes from "./routes/payment.routes.js"
 
 const app = express()
 
@@ -28,6 +29,7 @@ app.use("/api/product", ProductRoutes)
 app.use("/api/ai", AIRoutes)
 app.use("/api/cart", CartRoutes)
 app.use("/api/order", OrderRoutes)
+app.use("/api/payment", PaymentRoutes)
 
 
 export default app;

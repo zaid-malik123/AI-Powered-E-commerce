@@ -43,7 +43,7 @@ const CheckOut = () => {
   const onSubmit = async (data) => {
     if (paymentMethod === "cod") {
    
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/order/cod`, {
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/order/create`, {
         items: cart,
         address: {
           street: data.street,
@@ -57,6 +57,60 @@ const CheckOut = () => {
       }, {withCredentials: true});
 
       navigate("/confirm")
+    }
+
+    if (paymentMethod === "online") {
+      // Online payment logic to be implemented
+
+      const orderRes = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/payment/create-order`, {
+        amount: totalAmount  // in paise
+      }, {withCredentials: true});
+
+      console.log("Order Response aaya hia re baava :- ", orderRes.data)
+      const  order  = orderRes.data.razorpayOrder;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "E-Commerce Shop",
+        description: "Test Transaction",
+        order_id: order.id,
+        handler: async function (response) {
+          // Verify payment on the server
+          const verifyRes = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/payment/verify`, {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            items: cart,
+            address: {
+              street: data.street,
+              city: data.city,
+              state: data.state,
+              zipcode: data.zipcode,
+              country: data.country,
+            },
+            totalAmount: totalAmount,
+          }, {withCredentials: true});
+
+          if (verifyRes.data.success) {
+            navigate("/confirm")
+          } else {
+            alert("Payment verification failed. Please try again.");
+          }
+        },
+        prefill: {
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          contact: data.phone,
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
     }
     
     

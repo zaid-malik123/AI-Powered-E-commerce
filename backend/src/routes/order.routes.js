@@ -4,6 +4,6 @@ import { createOrder } from "../controllers/order.controllers.js";
 
 const router = express.Router()
 
-router.post("/cod", isAuth, createOrder)
+router.post("/create", isAuth, createOrder)
 
 export default router;
