@@ -132,3 +132,5 @@ export const getRelatedProducts = async (req, res) => {
 };
 
 
+
+
