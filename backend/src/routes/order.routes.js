@@ -7,9 +7,9 @@ const router = express.Router()
 
 router.post("/create", isAuth, createOrder)
 
-router.get("/user-orders", isAuth, getUserOrders);
+router.get("/", isAuth, getUserOrders);
 
-router.post("/update-status", isAdmin, isAuth, updateOrderStatus)
+router.post("/update-status/:orderId", isAdmin, isAuth, updateOrderStatus)
 
 
 export default router;

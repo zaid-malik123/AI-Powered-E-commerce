@@ -131,6 +131,44 @@ export const getRelatedProducts = async (req, res) => {
   }
 };
 
+export const searchProducts = async (req, res) => {
+  try {
+    const { q, price } = req.query;
 
+    if (!q && !price) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide search query or price",
+      });
+    }
+
+    const filter = {};
+
+    if (q) {
+      filter.$or = [
+        { name: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    if (price) {
+      filter.price = { $lte: Number(price) };
+    }
+
+    const products = await Product.find(filter).limit(20);
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
 
