@@ -58,7 +58,7 @@ const addToCartTool = tool(
 );
 
 const model = new ChatGoogleGenerativeAI({
-  model: "gemini-1.5-flash",
+  model: "gemini-3-flash-preview",
   apiKey: process.env.GEMINI_API_KEY,
 });
 
@@ -71,6 +71,9 @@ const modelWithTools = model.bindTools(Object.values(toolByName));
 
 async function agentNode(state) {
   const response = await modelWithTools.invoke(state.messages);
+
+
+  console.log("this is the ai response answer :- ", response)
 
   return {
     ...state,
