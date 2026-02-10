@@ -37,15 +37,18 @@ export const initSocket = (httpServer) => {
     console.log("A user connected");
 
     socket.on("message", async (data) => {
+
+    console.log("Received message:", data) 
      const aiResponse = await app.invoke(
         {
           messages: [new HumanMessage(data)],
+          token: socket.token,
         },
         {
           metadata: {
-            token: socket.token, 
+            token: socket.token,
           },
-        },
+        }
       );
       socket.emit(
         "response",

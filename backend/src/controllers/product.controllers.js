@@ -133,12 +133,12 @@ export const getRelatedProducts = async (req, res) => {
 
 export const searchProducts = async (req, res) => {
   try {
-    const { q, price } = req.query;
+    const { q } = req.query;
 
-    if (!q && !price) {
+    if (!q ) {
       return res.status(400).json({
         success: false,
-        message: "Please provide search query or price",
+        message: "Please provide search query ",
       });
     }
 
@@ -149,10 +149,6 @@ export const searchProducts = async (req, res) => {
         { name: { $regex: q, $options: "i" } },
         { description: { $regex: q, $options: "i" } },
       ];
-    }
-
-    if (price) {
-      filter.price = { $lte: Number(price) };
     }
 
     const products = await Product.find(filter).limit(20);
