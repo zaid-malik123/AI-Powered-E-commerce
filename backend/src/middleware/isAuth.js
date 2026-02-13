@@ -9,7 +9,7 @@ export const isAuth = async (req, res, next) => {
       token = req.cookies.token;
     }
 
-    if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+    if (!token && req.headers.authorization?.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
     }
 

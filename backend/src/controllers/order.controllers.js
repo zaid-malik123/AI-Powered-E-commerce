@@ -52,7 +52,7 @@ export const getUserOrders = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
 
-    const orders = await Order.find({ user: userId }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const orders = await Order.find({ user: userId }).sort({ createdAt: -1 }).skip(skip).limit(limit).populate("items.product")
 
     return res.status(200).json({
       success: true,
