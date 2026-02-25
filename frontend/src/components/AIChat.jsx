@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { FiMessageSquare, FiX, FiSend } from "react-icons/fi";
 import { HiSparkles } from "react-icons/hi";
+import {  useSelector } from "react-redux";
 
 const AIChat = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const {socket} = useSelector(state => state.userSlice)
   const [messages, setMessages] = useState([
     {
       id: 1,

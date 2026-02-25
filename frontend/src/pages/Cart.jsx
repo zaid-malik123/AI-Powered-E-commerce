@@ -35,7 +35,6 @@ const Cart = () => {
       }
 
       if (user) {
-        console.log("User found, fetching cart...", user);
         await fetchCart();
         setIsInitializing(false);
       } else if (hasCheckedUser) {

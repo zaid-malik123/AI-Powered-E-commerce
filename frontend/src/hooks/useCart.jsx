@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setCart, removeCartItem, clearCart, setCartTotal } from "../redux/features/cartSlice";
+import { setCart,  clearCart, setCartTotal } from "../redux/features/cartSlice";
 
 export const useCart = () => {
   const [loading, setLoading] = useState(false);
