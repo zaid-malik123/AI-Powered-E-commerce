@@ -35,11 +35,9 @@ export const initSocket = (httpServer) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("A user connected", socket.id);
 
     socket.on("message", async (data) => {
 
-    console.log("Received message:", data) 
      const aiResponse = await app.invoke(
         {
           messages: [new HumanMessage(data)],
@@ -51,10 +49,12 @@ export const initSocket = (httpServer) => {
           },
         }
       );
+
       socket.emit(
         "response",
         aiResponse.messages[aiResponse.messages.length - 1].content,
       );
+
     });
 
     socket.on("disconnect", () => {

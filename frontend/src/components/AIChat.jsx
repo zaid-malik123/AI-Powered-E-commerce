@@ -1,80 +1,59 @@
 import { useState, useRef, useEffect } from "react";
 import { FiMessageSquare, FiX, FiSend } from "react-icons/fi";
 import { HiSparkles } from "react-icons/hi";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const AIChat = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const {socket} = useSelector(state => state.userSlice)
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: "bot",
-      text: "Hello! I'm your AI Shopping Assistant. How can I help you today? 🤖",
-    },
-  ]);
+  const { socket } = useSelector((state) => state.userSlice);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // 🔹 Auto scroll to bottom
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
-  const handleSendMessage = async (e) => {
+  // 🔹 Handle sending message
+  const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
 
-    // Add user message
-    const userMessage = {
-      id: messages.length + 1,
-      type: "user",
-      text: input,
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    if (!socket || !input.trim()) return;
+
     setLoading(true);
 
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/ai/chat`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: input,
-            conversationHistory: messages,
-          }),
-        }
-      );
+    socket.emit("message", input);
 
-      if (!response.ok) throw new Error("Failed to get response");
+    setMessages((prev) => [
+      ...prev,
+      { type: "user", text: input },
+    ]);
 
-      const data = await response.json();
-      const botMessage = {
-        id: messages.length + 2,
-        type: "bot",
-        text: data.reply,
-      };
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      console.error("Error:", error);
-      const errorMessage = {
-        id: messages.length + 2,
-        type: "bot",
-        text: "Sorry, I encountered an error. Please try again later.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
+    setInput("");
   };
+
+  // 🔹 Listen AI response (ONLY ONCE)
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleResponse = (data) => {
+      setLoading(false);
+
+      setMessages((prev) => [
+        ...prev,
+        { type: "ai", text: data },
+      ]);
+    };
+
+    socket.on("response", handleResponse);
+
+    return () => {
+      socket.off("response", handleResponse);
+    };
+  }, [socket]);
 
   return (
     <div>
@@ -83,7 +62,6 @@ const AIChat = () => {
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-6 right-6 z-50 bg-blue-500 text-white rounded-full p-4 shadow-lg hover:bg-blue-600 transition flex items-center gap-2"
-          title="Open AI Chat"
         >
           <HiSparkles size={20} />
           <FiMessageSquare size={20} />
@@ -92,9 +70,10 @@ const AIChat = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-80 h-[500px] bg-white rounded-lg shadow-2xl flex flex-col">
+        <div className="fixed bottom-6 right-6 z-50 w-80 h-[500px] bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden">
+
           {/* Header */}
-          <div className="bg-blue-500 text-white p-4 rounded-t-lg flex items-center justify-between">
+          <div className="bg-blue-500 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <HiSparkles size={20} />
               <h3 className="font-semibold">AI Shopping Assistant</h3>
@@ -108,47 +87,46 @@ const AIChat = () => {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((msg) => (
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            {messages.map((msg, idx) => (
               <div
-                key={msg.id}
+                key={idx}
                 className={`flex ${
-                  msg.type === "user" ? "justify-end" : "justify-start"
+                  msg.type === "user"
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
                 <div
-                  className={`max-w-xs px-4 py-2 rounded-lg ${
-                    msg.type === "user"
-                      ? "bg-blue-500 text-white"
+                  className={`max-w-xs px-4 py-2 rounded-lg text-sm transition-all duration-300 ${
+                    msg.type === "ai"
+                      ? "bg-blue-500 text-white animate-fadeIn"
                       : "bg-gray-200 text-gray-800"
                   }`}
                 >
-                  <p className="text-sm">{msg.text}</p>
+                  {msg.text}
                 </div>
               </div>
             ))}
+
+            {/* Typing Animation */}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">
-                  <p className="text-sm flex items-center gap-1">
-                    <span className="animate-bounce">●</span>
-                    <span className="animate-bounce" style={{ delay: "0.1s" }}>
-                      ●
-                    </span>
-                    <span className="animate-bounce" style={{ delay: "0.2s" }}>
-                      ●
-                    </span>
-                  </p>
+                <div className="bg-gray-200 px-4 py-2 rounded-lg flex gap-1">
+                  <span className="w-2 h-2 bg-gray-600 rounded-full animate-bounce"></span>
+                  <span className="w-2 h-2 bg-gray-600 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-2 h-2 bg-gray-600 rounded-full animate-bounce [animation-delay:0.4s]"></span>
                 </div>
               </div>
             )}
+
             <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
           <form
             onSubmit={handleSendMessage}
-            className="border-t p-4 flex gap-2"
+            className="border-t p-4 flex gap-2 bg-white"
           >
             <input
               type="text"
@@ -160,7 +138,7 @@ const AIChat = () => {
             />
             <button
               type="submit"
-              disabled={loading || !input.trim()}
+              disabled={!input.trim() || loading}
               className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:opacity-50 transition"
             >
               <FiSend size={18} />
