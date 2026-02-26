@@ -54,7 +54,11 @@ const Nav = () => {
             {item}
           </h3>
         ))}
+
+      <button onClick={() => navigate("/admin/login")}  className="px-5 py-2 border border-gray-100 rounded-2xl text-sm hover:bg-gray-200 text-gray-700">Admin Panel</button>
+
       </div>
+
 
       <div className="flex gap-2">
         <div

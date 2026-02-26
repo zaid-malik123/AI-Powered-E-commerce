@@ -7,6 +7,7 @@ import UserRoutes from "./routes/user.routes.js"
 import ProductRoutes from "./routes/product.routes.js"
 import CartRoutes from "./routes/cart.routes.js"
 import OrderRoutes from "./routes/order.routes.js"
+import AdminRoutes from "./routes/admin.routes.js"
 import PaymentRoutes from "./routes/payment.routes.js"
 
 const app = express()
@@ -27,6 +28,7 @@ app.use("/api/user", UserRoutes)
 app.use("/api/product", ProductRoutes)
 app.use("/api/cart", CartRoutes)
 app.use("/api/order", OrderRoutes)
+app.use("/api/admin", AdminRoutes)
 app.use("/api/payment", PaymentRoutes)
 
 

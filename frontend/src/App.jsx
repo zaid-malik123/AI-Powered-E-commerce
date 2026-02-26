@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { setSocket } from "./redux/features/userSlice";
+import { useLocation } from "react-router-dom";
 
 const App = () => {
   const dispatch = useDispatch()
@@ -45,12 +46,15 @@ const App = () => {
     }
   }, [user]);
 
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
   return (
     <div className="w-screen min-h-screen md:px-25 px-5">
-      <Nav />
+      {!isAdminRoute && <Nav />}
       <AppRoutes />
-      <Footer />
-      <AIChat />
+      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <AIChat />}
     </div>
   );
 };

@@ -10,6 +10,7 @@ import ProductDetail from "../pages/ProductDetail"
 import CheckOut from "../pages/CheckOut"
 import OrderConfirm from "../pages/OrderConfirm"
 import MyOrders from "../pages/MyOrders"
+import AdminLogin from "../pages/AdminLogin"
 
 const AppRoutes = () => {
   return (
@@ -26,6 +27,7 @@ const AppRoutes = () => {
             <Route path="/checkout" element={<CheckOut/>}></Route>
             <Route path="/confirm" element={<OrderConfirm/>}></Route>   
             <Route path="/my-orders" element={<MyOrders/>}></Route>
+            <Route path="/admin/login" element={<AdminLogin/>}></Route>
         </Routes>
     </div>
   )
