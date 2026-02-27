@@ -8,7 +8,7 @@ export const adminLogin = async (req, res) => {
     const adminPassword = process.env.ADMIN_LOGIN_PASSWORD || "password";
 
     if (email === adminEmail && password === adminPassword) {
-      const token = jwt.sign({ role: "admin" }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ userId: "69a153201e92db21b4018b34" ,role: "admin" }, process.env.JWT_SECRET, {
         expiresIn: "7d",
       });
       res.cookie("token", token, {

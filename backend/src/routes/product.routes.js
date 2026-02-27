@@ -6,7 +6,7 @@ import { createProductController, getAllProducts, filterProducts, getSingleProdu
 const upload = multer({storage: multer.memoryStorage()});
 const router = express.Router()
 
-router.post("/create", upload.single("image"),isAuth, isAdmin, createProductController )
+router.post("/create", upload.single("image"), isAuth, isAdmin, createProductController )
 
 router.get("/all", getAllProducts)
 
