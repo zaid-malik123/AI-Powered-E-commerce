@@ -68,6 +68,29 @@ export const getUserOrders = async (req, res) => {
   }
 }
 
+export const getAllOrders = async (req, res) => {
+
+  try {
+
+    const orders = await Order.find({}).populate("items.product")
+
+    return res.status(200).json({
+      success: true,
+      orders
+    });
+
+    
+  } catch (error) {
+
+    console.error("Get User Orders Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while fetching orders"
+    });
+    
+  }
+}
+
 
 export const updateOrderStatus = async (req, res) => {
   try {
