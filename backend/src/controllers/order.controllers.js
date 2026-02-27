@@ -1,10 +1,9 @@
 import Order from "../models/order.model.js";
-
+import Product from "../models/product.model.js";
 
 export const createOrder = async (req, res) => {
   try {
     const userId = req.user._id;
-    
 
     const { items, address, paymentMethod, totalAmount } = req.body;
 
@@ -16,7 +15,6 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ message: "Address is required" });
     }
 
-
     const order = await Order.create({
       user: userId,
       items,
@@ -24,73 +22,68 @@ export const createOrder = async (req, res) => {
       paymentMethod: paymentMethod || "cod",
       paymentStatus: "Pending", // COD ke liye
       orderStatus: "Placed",
-      address
+      address,
     });
+
 
     return res.status(201).json({
       success: true,
       message: "Order placed successfully (COD)",
-      order
+      order,
     });
-
   } catch (error) {
     console.error("Create Order Error:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong while creating order"
+      message: "Something went wrong while creating order",
     });
   }
 };
-
 
 export const getUserOrders = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const limit = parseInt(req.query.limit) || 20;  
+    const limit = parseInt(req.query.limit) || 20;
 
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
 
-    const orders = await Order.find({ user: userId }).sort({ createdAt: -1 }).skip(skip).limit(limit).populate("items.product")
+    const orders = await Order.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("items.product");
 
     return res.status(200).json({
       success: true,
-      orders
+      orders,
     });
-
   } catch (error) {
     console.error("Get User Orders Error:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong while fetching orders"
+      message: "Something went wrong while fetching orders",
     });
   }
-}
+};
 
 export const getAllOrders = async (req, res) => {
-
   try {
-
-    const orders = await Order.find({}).populate("items.product")
+    const orders = await Order.find({}).populate("items.product");
 
     return res.status(200).json({
       success: true,
-      orders
+      orders,
     });
-
-    
   } catch (error) {
-
     console.error("Get User Orders Error:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong while fetching orders"
+      message: "Something went wrong while fetching orders",
     });
-    
   }
-}
-
+};
 
 export const updateOrderStatus = async (req, res) => {
   try {
@@ -98,7 +91,7 @@ export const updateOrderStatus = async (req, res) => {
     const { status } = req.body;
 
     const validStatuses = ["Placed", "Shipped", "Delivered"];
-    
+
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid order status" });
     }
@@ -114,14 +107,13 @@ export const updateOrderStatus = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Order status updated successfully",
-      order
+      order,
     });
-
   } catch (error) {
     console.error("Update Order Status Error:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong while updating order status"
+      message: "Something went wrong while updating order status",
     });
   }
-}
+};

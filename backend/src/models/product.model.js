@@ -26,21 +26,21 @@ const productSchema = new mongoose.Schema(
     },
 
     price: {
-      type: String, 
+      type: String,
       required: true,
     },
 
     sizes: {
-      type: String, 
+      type: String,
       enum: ["S", "M", "L", "XL", "XXL"],
     },
 
     image: {
-      type: String, 
+      type: String,
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 productSchema.index({ name: "text", description: "text" });

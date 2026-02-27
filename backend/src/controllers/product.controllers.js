@@ -172,3 +172,24 @@ export const deleteProduct = async (req, res) => {
     });
   }
 };
+
+export const latestCollection = async (req, res) => {
+  try {
+    const products = await Product.find({})
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    return res.status(200).json({
+      success: true,
+      products,
+    });
+
+  } catch (error) {
+    console.error("Latest Collection Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while fetching latest products",
+    });
+  }
+};
+
