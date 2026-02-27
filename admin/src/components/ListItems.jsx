@@ -16,6 +16,15 @@ const ListItems = () => {
     }
   };
 
+  const handleDeleteProduct = async (id) => {
+
+    const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/product/delete/${id}`, {
+      withCredentials: true
+    })
+
+    console.log(res.data)
+  }
+  
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -62,7 +71,7 @@ const ListItems = () => {
 
                 {/* Action */}
                 <td className="p-4 text-center">
-                  <button className="text-red-500 font-bold text-lg hover:text-red-700">
+                  <button onClick={() => handleDeleteProduct(product._id)} className="text-red-500 font-bold text-lg hover:text-red-700">
                     X
                   </button>
                 </td>
