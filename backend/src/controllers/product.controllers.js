@@ -108,29 +108,6 @@ export const getSingleProduct = async (req, res) => {
   }
 };
 
-export const getRelatedProducts = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const product = await Product.findById(id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    const relatedProducts = await Product.find({
-      category: product.category,
-      _id: { $ne: product._id },
-    }).limit(5);
-
-    res.status(200).json({
-      success: true,
-      relatedProducts,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 export const searchProducts = async (req, res) => {
   try {
     const { q } = req.query;
@@ -167,4 +144,66 @@ export const searchProducts = async (req, res) => {
   }
 };
 
+export const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    await product.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+
+  } catch (error) {
+    console.error("Delete Product Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while deleting product",
+    });
+  }
+};
+
+export const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+
+  } catch (error) {
+    console.error("Update Product Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while updating product",
+    });
+  }
+};
