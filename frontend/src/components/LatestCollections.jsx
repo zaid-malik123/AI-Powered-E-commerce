@@ -17,12 +17,12 @@ const LatestCollections = () => {
   return (
     <div className="w-full mt-10">
       <div className="flex items-center justify-center flex-col gap-5">
-        <h1 className="text-[40px] font-[400] tracking-[1.2px]">
+       <div className='flex items-center gap-5'>
+           <h1 className="text-[40px] font-[400] tracking-[1.2px]">
           Latest <span className="text-gray-500">Collections</span>
         </h1>
-        <span className="text-sm font-[200]">
-          New arrivals that redefine everyday fashion.
-        </span>
+        <div className="w-30 h-[1px] bg-gray-700" />
+       </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-5 mt-10">

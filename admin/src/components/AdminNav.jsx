@@ -1,17 +1,19 @@
-import logo from "../assets/logo.png";
+// import logo from "../assets/logo.png";
 
 const AdminNav = () => {
   return (
-    <div className="py-5 flex items-center justify-between">
-
+    <header className="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center">
         <div>
-            <img className="w-15" src={logo} alt="" />
-            <p className="text-sm font-thin text-blue-800">ADMIN PANEL</p>
+          <h1 className="text-2xl font-bold tracking-wide">
+            FOREVER <span className="text-pink-500">.</span>
+          </h1>
+          <p className="text-sm text-gray-500">Admin Panel</p>
         </div>
 
-        <button className="px-5 py-1 bg-gray-500 rounded-2xl text-white">LogOut</button>
-
-    </div>
+        <button className="bg-gray-700 text-white px-5 py-2 rounded-full hover:bg-gray-800 transition">
+          Logout
+        </button>
+      </header>
   )
 }
 

@@ -1,5 +1,6 @@
 import {Routes, Route} from "react-router-dom"
 import AdminLogin from "../pages/AdminLogin"
+import  AdminDashBoard  from "../pages/AdminDashBoard"
 
 
 const AppRoutes = () => {
@@ -9,6 +10,8 @@ const AppRoutes = () => {
         <Routes>
 
             <Route path="/admin/login" element={<AdminLogin/>}></Route>
+
+            <Route path="/" element={<AdminDashBoard/>}></Route>
 
         </Routes>
     </div>
