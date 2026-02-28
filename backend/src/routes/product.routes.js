@@ -1,16 +1,35 @@
-import express from "express"
-import multer from "multer"
+import express from "express";
+import multer from "multer";
 import { isAuth } from "../middleware/isAuth.js";
 import { isAdmin } from "../middleware/isAdmin.js";
-import { createProductController, getAllProducts, filterProducts, getSingleProduct, searchProducts, deleteProduct, latestCollection, getBestSellers } from "../controllers/product.controllers.js";
+import {
+	createProductController,
+	getAllProducts,
+	filterProducts,
+	getSingleProduct,
+	searchProducts,
+	deleteProduct,
+	latestCollection,
+	getBestSellers,
+} from "../controllers/product.controllers.js";
+import { createProductValidator, filterProductsValidator } from "../validators/product.validators.js";
+import { validate } from "../validators/validate.js";
 const upload = multer({storage: multer.memoryStorage()});
 const router = express.Router()
 
-router.post("/create", upload.single("image"), isAuth, isAdmin, createProductController )
+router.post(
+	"/create",
+	upload.single("image"),
+	isAuth,
+	isAdmin,
+	createProductValidator,
+	validate,
+	createProductController
+);
 
 router.get("/all", getAllProducts)
 
-router.post("/filter", filterProducts)
+router.post("/filter", filterProductsValidator, validate, filterProducts)
 
 router.get("/search", searchProducts);
 
