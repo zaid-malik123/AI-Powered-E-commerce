@@ -193,3 +193,20 @@ export const latestCollection = async (req, res) => {
   }
 };
 
+export const getBestSellers = async (req, res) => {
+  try {
+    const bestSellers = await Product.find()
+      .sort({ totalSold: -1 }) 
+      .limit(5);
+
+    res.status(200).json({
+      success: true,
+      products: bestSellers,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching best sellers",
+    });
+  }
+};

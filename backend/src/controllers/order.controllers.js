@@ -25,6 +25,13 @@ export const createOrder = async (req, res) => {
       address,
     });
 
+    await Promise.all(
+      order.items.map((item) =>
+        Product.findByIdAndUpdate(item.product, {
+          $inc: { totalSold: item.quantity },
+        }),
+      ),
+    );
 
     return res.status(201).json({
       success: true,
