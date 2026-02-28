@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt"
 import { genToken } from "../config/genToken.js";
+import { sendWelcomeMail } from "../services/mail.service.js";
 
 
 export const signup = async (req, res) => {
@@ -10,7 +11,6 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Ensure password is a string before using bcrypt
     const passwordStr = typeof password === "string" ? password : String(password);
 
     const user = await User.findOne({ email });
@@ -40,6 +40,8 @@ export const signup = async (req, res) => {
       sameSite: "strict",
       secure: false, // set true in production
     });
+
+    await sendWelcomeMail(newUser.email, newUser.name)
 
     return res.status(201).json(newUser);
   } catch (error) {
