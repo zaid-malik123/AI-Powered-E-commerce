@@ -1,9 +1,13 @@
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
+import User from "../models/user.model.js";
+import { sendOrderConfirmationMail } from "../services/mail.service.js";
 
 export const createOrder = async (req, res) => {
   try {
     const userId = req.user._id;
+
+    const user = await User.findById(userId)
 
     const { items, address, paymentMethod, totalAmount } = req.body;
 
@@ -16,7 +20,7 @@ export const createOrder = async (req, res) => {
     }
 
     const order = await Order.create({
-      user: userId,
+      user: user._id,
       items,
       totalAmount,
       paymentMethod: paymentMethod || "cod",
@@ -32,6 +36,8 @@ export const createOrder = async (req, res) => {
         }),
       ),
     );
+
+    sendOrderConfirmationMail(user.email, order)
 
     return res.status(201).json({
       success: true,

@@ -2,6 +2,8 @@ import crypto from "crypto";
 import Payment from "../models/payment.model.js";
 import Order from "../models/order.model.js";
 import Razorpay from "razorpay";
+import { sendOrderConfirmationMail, sendPaymentSuccessMail } from "../services/mail.service.js";
+import User from "../models/user.model.js";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -39,6 +41,8 @@ export const verifyAndSavePayment = async (req, res) => {
   try {
     const userId = req.user._id;
 
+    const user = await User.findById(userId)
+
     const {
       razorpay_order_id,
       razorpay_payment_id,
@@ -65,7 +69,7 @@ export const verifyAndSavePayment = async (req, res) => {
 
     // 🧾 Create ORDER
     const order = await Order.create({
-      user: userId,
+      user: user._id,
       items,
       address,
       totalAmount,
@@ -73,6 +77,8 @@ export const verifyAndSavePayment = async (req, res) => {
       paymentStatus: "Paid",
       orderStatus: "Placed",
     });
+
+    sendOrderConfirmationMail(user.email, order)
 
     // 💳 Save PAYMENT
     await Payment.create({
@@ -85,6 +91,8 @@ export const verifyAndSavePayment = async (req, res) => {
       paymentMethod: "razorpay",
       status: "completed",
     });
+
+    sendPaymentSuccessMail(user.email, order, razorpay_payment_id)
 
     res.status(201).json({
       success: true,

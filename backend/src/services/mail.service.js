@@ -13,9 +13,9 @@ const transporter = nodemailer.createTransport({
 
 export const sendOtpMail = async (to, otp) => {
   await transporter.sendMail({
-    from: `"YourStore Support" <${process.env.EMAIL_USER}>`,
+    from: `"OUTFYT Support" <${process.env.EMAIL_USER}>`,
     to,
-    subject: "Password Reset OTP - YourStore",
+    subject: "Password Reset OTP - OUTFYT",
     html: `
     <div style="font-family: Arial, sans-serif; background:#f4f4f4; padding:40px;">
       <div style="max-width:600px; margin:auto; background:#ffffff; padding:30px; border-radius:10px;">
@@ -50,7 +50,7 @@ export const sendOtpMail = async (to, otp) => {
 
 export const sendWelcomeMail = async (to, name) => {
   await transporter.sendMail({
-    from: `"YourStore" <${process.env.EMAIL_USER}>`,
+    from: `"OUTFYT" <${process.env.EMAIL_USER}>`,
     to,
     subject: "Welcome to OUTFYT 🎉",
     html: `
@@ -86,7 +86,7 @@ export const sendWelcomeMail = async (to, name) => {
 
 export const sendOrderConfirmationMail = async (to, order) => {
   await transporter.sendMail({
-    from: `"YourStore Orders" <${process.env.EMAIL_USER}>`,
+    from: `"OUTFYT Orders" <${process.env.EMAIL_USER}>`,
     to,
     subject: `Order Confirmed - ${order._id}`,
     html: `
@@ -117,7 +117,7 @@ export const sendOrderConfirmationMail = async (to, order) => {
 
 export const sendPaymentSuccessMail = async (to, order, transactionId) => {
   await transporter.sendMail({
-    from: `"YourStore Payments" <${process.env.EMAIL_USER}>`,
+    from: `"OUTFYT Payments" <${process.env.EMAIL_USER}>`,
     to,
     subject: "Payment Successful 💳",
     html: `
