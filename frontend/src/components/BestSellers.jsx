@@ -1,16 +1,22 @@
 import Card from "./Card";
-import Image1 from "../assets/image1.png";
-import Image2 from "../assets/image2.png";
-import Image3 from "../assets/image3.png";
+import axios from "axios"
+import { useEffect, useState } from "react";
 
 const BestSellers = () => {
-  const data = [
-    { image: Image1, title: "Women Round Neck Cotton Top", price: 22 },
-    { image: Image2, title: "Women Round Neck Cotton Top", price: 25 },
-    { image: Image3, title: "Women Round Neck Cotton Top", price: 30 },
-    { image: Image1, title: "Women Round Neck Cotton Top", price: 22 },
-    { image: Image2, title: "Women Round Neck Cotton Top", price: 25 },
-  ];
+  const [data, setData] = useState([])
+
+
+  const getBestSellersProduct = async () => {
+
+    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/product/best`)
+
+    setData(res.data.products) 
+
+  }
+
+  useEffect(() => {
+    getBestSellersProduct()
+  }, [])
   return (
     <div className="w-full mt-8">
       <div className="flex items-center justify-center gap-5">
