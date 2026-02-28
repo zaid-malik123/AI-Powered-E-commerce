@@ -10,6 +10,7 @@ import ProductDetail from "../pages/ProductDetail"
 import CheckOut from "../pages/CheckOut"
 import OrderConfirm from "../pages/OrderConfirm"
 import MyOrders from "../pages/MyOrders"
+import ForgotPassword from "../pages/ForgotPassword"
 
 const AppRoutes = () => {
   return (
@@ -26,6 +27,7 @@ const AppRoutes = () => {
             <Route path="/checkout" element={<CheckOut/>}></Route>
             <Route path="/confirm" element={<OrderConfirm/>}></Route>   
             <Route path="/my-orders" element={<MyOrders/>}></Route>
+            <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
         </Routes>
     </div>
   )

@@ -70,6 +70,8 @@ const Login = () => {
           <p className="text-red-600 text-sm">{errors.password.message}</p>
         )}
 
+        <p onClick={() => navigate("/forgot-password")} className="text-sm text-gray-700 cursor-pointer hover:underline">Forgot Password ?</p>
+
         {/* SIGNUP LINK */}
         <p
           onClick={() => navigate("/signup")}

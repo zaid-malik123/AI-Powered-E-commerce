@@ -68,7 +68,7 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="min-h-screen max-w-6xl mx-auto px-4 py-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Product Image */}
         <div className="w-full">
