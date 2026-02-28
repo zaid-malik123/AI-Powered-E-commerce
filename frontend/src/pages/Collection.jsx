@@ -1,75 +1,27 @@
 import Card from "../components/Card";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { IoIosArrowDown } from "react-icons/io";
-import { useState, useEffect, useRef } from "react";
-// import useGetAllProducts from "../hooks/useGetAllProducts";
-// import useFilterProducts from "../hooks/useFilterProducts";
+import { useState, useEffect } from "react";
+import useGetAllProducts from "../hooks/useGetAllProducts";
+import useFilterProducts from "../hooks/useFilterProducts";
 // import SmartSearch from "../components/SmartSearch";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Collection = () => {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [displayProducts, setDisplayProducts] = useState([]);
-  // searchResults removed, pagination handles results directly
+  const [searchResults, setSearchResults] = useState(null);
 
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const [page, setPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const prevQueryRef = useRef("");
-
-  // fetch products on page or query change, with reset logic
+  const { products: allProducts, loading: allLoading } = useGetAllProducts();
+  const { products: filteredProducts, loading: filterLoading, filterProducts } = useFilterProducts();
+  const navigate = useNavigate()
   useEffect(() => {
-    const q = searchParams.get("q") || "";
-
-    // if query changed and not on first page, reset page and exit; effect will re-run
-    if (q !== prevQueryRef.current && page !== 1) {
-      setDisplayProducts([]);
-      setPage(1);
-      prevQueryRef.current = q;
-      return;
+    if (allProducts.length > 0) {
+      setDisplayProducts(allProducts);
     }
-
-    // if query changed and page is 1, update prevQuery and clear existing products
-    if (q !== prevQueryRef.current) {
-      prevQueryRef.current = q;
-      setDisplayProducts([]);
-    }
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // fall back to VITE_BASE_URL for compatibility with existing env files
-        const baseUrl =
-          import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL ||
-          "http://localhost:3000";
-        const url = new URL(`${baseUrl}/api/product/all`);
-        url.searchParams.append("page", page);
-        url.searchParams.append("limit", 20);
-        if (q) url.searchParams.append("q", q);
-
-        const res = await fetch(url.toString());
-        const data = await res.json();
-        if (res.ok && data.products) {
-          if (page === 1) {
-            setDisplayProducts(data.products);
-          } else {
-            setDisplayProducts((prev) => [...prev, ...data.products]);
-          }
-          setHasNextPage(data.hasNextPage);
-        }
-      } catch (err) {
-        console.error("Collection fetch error", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [page, searchParams]);
+  }, [allProducts]);
 
   const handleCategoryChange = (category) => {
     setSelectedCategories((prev) =>
@@ -87,8 +39,33 @@ const Collection = () => {
     );
   };
 
-  // filters still available but apply locally using full dataset or call API? for now ignore, could add later.
-  // remove old filter-related effects
+  useEffect(() => {
+    if (selectedCategories.length > 0 || selectedSubCategories.length > 0) {
+      filterProducts(selectedCategories, selectedSubCategories);
+    } else if (!searchResults) {
+      setDisplayProducts(allProducts);
+    }
+  }, [selectedCategories, selectedSubCategories]);
+
+  useEffect(() => {
+    if (filteredProducts.length > 0) {
+      setDisplayProducts(filteredProducts);
+    }
+  }, [filteredProducts]);
+
+  useEffect(() => {
+    if (searchResults) {
+      setDisplayProducts(searchResults);
+    }
+  }, [searchResults]);
+
+  const handleSearchResults = (results) => {
+    setSearchResults(results);
+    if (results.length > 0) {
+      setSelectedCategories([]);
+      setSelectedSubCategories([]);
+    }
+  };
 
   return (
     <div className="w-full min-h-screen mt-10 flex flex-col px-4 md:px-10">
@@ -158,17 +135,19 @@ const Collection = () => {
 
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-5">
-            <span className="text-2xl text-gray-600">All Collections</span>
+            <span className="text-2xl text-gray-600">
+              {searchResults ? "Search Results" : "All Collections"}
+            </span>
             <div className="w-12 h-0.5 bg-black"></div>
           </div>
 
-          {loading && (
+          {(allLoading || filterLoading) && (
             <div className="text-center py-10">
               <p className="text-gray-500">Loading products...</p>
             </div>
           )}
 
-          {displayProducts.length === 0 && !loading && (
+          {displayProducts.length === 0 && !allLoading && !filterLoading && (
             <div className="text-center py-10">
               <p className="text-gray-500">No products found</p>
             </div>
@@ -191,17 +170,6 @@ const Collection = () => {
               </div>
             ))}
           </div>
-          {/* load more button */}
-          {hasNextPage && !loading && (
-            <div className="text-center mt-6">
-              <button
-                onClick={() => setPage((p) => p + 1)}
-                className="px-6 py-2 bg-black text-white rounded-md"
-              >
-                Load More
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
