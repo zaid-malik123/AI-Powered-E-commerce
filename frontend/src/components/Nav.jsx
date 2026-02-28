@@ -3,24 +3,32 @@ import { IoIosSearch } from "react-icons/io";
 import { FaOpencart } from "react-icons/fa";
 import { CiUser } from "react-icons/ci";
 import { CiMenuBurger } from "react-icons/ci";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { setUser } from "../redux/features/userSlice";
 import SmartSearch from "./SmartSearch";
+import { useLocation } from "react-router-dom";
+import { RxCross1 } from "react-icons/rx";
 
 const Nav = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profile, setProfile] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userSlice);
   const { cart } = useSelector((state) => state.cartSlice);
 
+  useEffect(() => {
+  if (location.pathname !== "/collection") {
+    setSearchOpen(false);
+  }
+}, [location]);
   const logoutHandler = async () => {
     await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/logout`, {
       withCredentials: true,
@@ -67,7 +75,7 @@ const Nav = () => {
 
       <div className="flex gap-2">
         <div
-          onClick={() => setSearchOpen((prev) => !prev)}
+          onClick={() => {setSearchOpen((prev) => !prev), navigate("/collection")}}
           className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-400/20"
         >
           <IoIosSearch size={20} />
@@ -103,9 +111,10 @@ const Nav = () => {
       </div>
 
       {searchOpen && (
-        <div className="w-full fixed top-15 left-0 flex items-center justify-center z-40 p-4">
-          <div className="relative w-[80%] md:w-[60%]">
+        <div className="w-full mt-1 absolute top-15 left-0 flex items-center justify-center z-40 p-4">
+          <div className="relative w-[90%] md:w-[60%] flex items-center gap-5">
             <SmartSearch onResultsChange={setSearchResults} />
+            <RxCross1 onClick={() => setSearchOpen(false)} size={20}/>
           </div>
         </div>
       )}
