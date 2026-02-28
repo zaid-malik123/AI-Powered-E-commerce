@@ -11,6 +11,7 @@ import {
 	deleteProduct,
 	latestCollection,
 	getBestSellers,
+    adminAllProduct,
 } from "../controllers/product.controllers.js";
 import { createProductValidator, filterProductsValidator } from "../validators/product.validators.js";
 import { validate } from "../validators/validate.js";
@@ -28,6 +29,8 @@ router.post(
 );
 
 router.get("/all", getAllProducts)
+
+router.get("/admin/all", adminAllProduct)
 
 router.post("/filter", filterProductsValidator, validate, filterProducts)
 

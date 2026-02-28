@@ -11,8 +11,10 @@ const AIProductAnalyzer = ({ product }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/ai/analyze-product`,
+       const baseUrl =
+         import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL ||
+         "http://localhost:3000";
+       const response = await fetch(`${baseUrl}/api/ai/analyze-product`,
         {
           method: "POST",
           headers: {

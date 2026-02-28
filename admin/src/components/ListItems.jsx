@@ -7,7 +7,7 @@ const ListItems = () => {
   // Fetch all products
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/product/all`, {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/product/admin/all`, {
         withCredentials: true
       });
       setProducts(res.data);

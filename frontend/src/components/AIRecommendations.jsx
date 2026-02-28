@@ -20,8 +20,11 @@ const AIRecommendations = ({ userId }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId }),
+              const baseUrl =
+                import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL ||
+                "http://localhost:3000";
+              const response = await fetch(
+                `${baseUrl}/api/ai/recommendations`,
         }
       );
 

@@ -38,17 +38,43 @@ export const createProductController = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({}).sort({createdAt: -1})
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const q = req.query.q;
 
-    return res.status(200).json(products)
+    const filter = {};
+    if (q) {
+      filter.$or = [
+        { name: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+      ];
+    }
 
+    const total = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(total / limit);
+    const hasNextPage = page < totalPages;
+
+    const products = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    return res.status(200).json({
+      success: true,
+      page,
+      limit,
+      totalPages,
+      hasNextPage,
+      products,
+    });
   } catch (error) {
+    console.error("getAllProducts error", error);
     return res.status(500).json({
       success: false,
       message: "Server error",
     });
   }
-}
+};
 
 export const filterProducts = async (req, res) => {
   try {
@@ -79,6 +105,12 @@ export const filterProducts = async (req, res) => {
     });
   }
 };
+
+export const adminAllProduct = async (req, res) => {
+  const products = await Product.find({})
+
+  return res.status(200).json(products)
+}
 
 export const getSingleProduct = async (req, res) => {
   try {
