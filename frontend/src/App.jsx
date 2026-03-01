@@ -50,7 +50,7 @@ const App = () => {
   const isAdminRoute = location.pathname.startsWith("/admin");
 
   return (
-    <div className="w-screen min-h-screen md:px-25 px-5">
+    <div className="w-screen min-h-screen md:px-25 px-3">
       {!isAdminRoute && <Nav />}
       <AppRoutes />
       {!isAdminRoute && <Footer />}

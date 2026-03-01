@@ -50,24 +50,47 @@ export const getAllProducts = async (req, res) => {
   }
 }
 
-export const filterProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
   try {
-    const { category, subCategory } = req.body;
+    const { 
+      category, 
+      subCategory, 
+      q, 
+      page = 1, 
+      limit = 30 
+    } = req.query;
 
     const filter = {};
 
-    if (category && category.length > 0) {
-      filter.category = { $in: category };
+    if (category) {
+      filter.category = { $in: category.split(",") };
     }
 
-    if (subCategory && subCategory.length > 0) {
-      filter.subCategory = { $in: subCategory };
+    if (subCategory) {
+      filter.subCategory = { $in: subCategory.split(",") };
     }
 
-    const products = await Product.find(filter).sort({createdAt: -1});
+    if (q) {
+      filter.$or = [
+        { name: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    const total = await Product.countDocuments(filter);
 
     res.status(200).json({
       success: true,
+      total,
+      currentPage: Number(page),
+      totalPages: Math.ceil(total / limit),
       products,
     });
 
@@ -75,7 +98,7 @@ export const filterProducts = async (req, res) => {
     console.log(error);
     res.status(500).json({
       success: false,
-      message: "Filter error",
+      message: "Server error",
     });
   }
 };
@@ -104,42 +127,6 @@ export const getSingleProduct = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Server error",
-    });
-  }
-};
-
-export const searchProducts = async (req, res) => {
-  try {
-    const { q } = req.query;
-
-    if (!q ) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide search query ",
-      });
-    }
-
-    const filter = {};
-
-    if (q) {
-      filter.$or = [
-        { name: { $regex: q, $options: "i" } },
-        { description: { $regex: q, $options: "i" } },
-      ];
-    }
-
-    const products = await Product.find(filter).limit(20);
-
-    res.status(200).json({
-      success: true,
-      count: products.length,
-      data: products,
-    });
-  } catch (error) {
-    console.error("Search error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
     });
   }
 };

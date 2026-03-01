@@ -5,14 +5,13 @@ import { isAdmin } from "../middleware/isAdmin.js";
 import {
 	createProductController,
 	getAllProducts,
-	filterProducts,
 	getSingleProduct,
-	searchProducts,
 	deleteProduct,
 	latestCollection,
 	getBestSellers,
+	getProducts,
 } from "../controllers/product.controllers.js";
-import { createProductValidator, filterProductsValidator } from "../validators/product.validators.js";
+import { createProductValidator } from "../validators/product.validators.js";
 import { validate } from "../validators/validate.js";
 const upload = multer({storage: multer.memoryStorage()});
 const router = express.Router()
@@ -29,9 +28,7 @@ router.post(
 
 router.get("/all", getAllProducts)
 
-router.post("/filter", filterProductsValidator, validate, filterProducts)
-
-router.get("/search", searchProducts);
+router.get("/filter", getProducts)
 
 router.get("/latest", latestCollection)
 
