@@ -16,7 +16,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="w-full h-[250px] sm:h-[350px] md:h-[400px] mt-5 rounded-xl overflow-hidden relative">
+    <div className="w-full h-[300px] sm:h-[350px] md:h-[400px] mt-5 rounded-xl overflow-hidden relative">
       
       {/* Image */}
       <img

@@ -12,6 +12,7 @@ import { setUser } from "../redux/features/userSlice";
 import SmartSearch from "./SmartSearch";
 import { useLocation } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
+import { IoChevronBack } from "react-icons/io5";
 
 const Nav = () => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -25,10 +26,10 @@ const Nav = () => {
   const { cart } = useSelector((state) => state.cartSlice);
 
   useEffect(() => {
-  if (location.pathname !== "/collection") {
-    setSearchOpen(false);
-  }
-}, [location]);
+    if (location.pathname !== "/collection") {
+      setSearchOpen(false);
+    }
+  }, [location]);
   const logoutHandler = async () => {
     await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/logout`, {
       withCredentials: true,
@@ -75,7 +76,9 @@ const Nav = () => {
 
       <div className="flex gap-2">
         <div
-          onClick={() => {setSearchOpen((prev) => !prev), navigate("/collection")}}
+          onClick={() => {
+            (setSearchOpen((prev) => !prev), navigate("/collection"));
+          }}
           className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-400/20"
         >
           <IoIosSearch size={20} />
@@ -114,7 +117,7 @@ const Nav = () => {
         <div className="w-full mt-1 absolute top-15 left-0 flex items-center justify-center z-40 p-4">
           <div className="relative w-[90%] md:w-[60%] flex items-center gap-5">
             <SmartSearch onResultsChange={setSearchResults} />
-            <RxCross1 onClick={() => setSearchOpen(false)} size={20}/>
+            <RxCross1 onClick={() => setSearchOpen(false)} size={20} />
           </div>
         </div>
       )}
@@ -122,47 +125,69 @@ const Nav = () => {
       {/* Overlay */}
       {sidebarOpen && (
         <div
-          onClick={() => setSidebarOpen(false)}
+          onClick={() => {
+            setSidebarOpen(true);
+            setProfile(false);
+          }}
           className="fixed inset-0 bg-black/40 z-40"
         />
       )}
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full w-[75%] max-w-[280px] bg-white z-50
-        transform transition-transform duration-300
-        ${sidebarOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-0 right-0 h-full font-mono w-full bg-white z-50
+  transform transition-transform duration-300
+  ${sidebarOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        <div className="p-5 flex flex-col gap-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold">OUTFYT</span>
-            <button onClick={() => setSidebarOpen(false)} className="text-xl">
-              ✕
-            </button>
+        <div className="flex flex-col h-full">
+          {/* Back Button */}
+          <div
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-2 px-5 py-4 border-b border-gray-400 cursor-pointer"
+          >
+            <IoChevronBack size={20} />
+            <span className="text-md font-medium">Back</span>
           </div>
 
-          {/* Links */}
-          {["Home", "Collection", "About", "Contact"].map((item) => (
-            <h3
-              key={item}
-              onClick={() => setSidebarOpen(false)}
-              className="text-sm font-extralight cursor-pointer hover:text-gray-500 hover:bg-gray-600 px-5 py-2 bg-gray-100 rounded-md"
-            >
-              {item}
-            </h3>
-          ))}
+          {/* Menu Items */}
+          <div className="flex flex-col">
+            {[
+              { name: "Home", path: "/" },
+              { name: "Collection", path: "/collection" },
+              { name: "About", path: "/about" },
+              { name: "Contact", path: "/contact" },
+              {
+                name: "Admin Panel",
+                path: "http://localhost:5174/admin/login",
+                external: true,
+              },
+            ].map((item, index) => {
+              const isActive =
+                !item.external && location.pathname === item.path;
 
-          <hr />
-
-          {/* Extra actions */}
-
-          <div
-            onClick={logoutHandler}
-            className="absolute bottom-10 flex items-center gap-2 "
-          >
-            <IoIosLogOut size={20} className="text-red-600" />
-            <span className="text-red-500">LogOut</span>
+              return (
+                <div
+                  key={index}
+                  onClick={() => {
+                    if (item.external) {
+                      window.open(item.path, "_blank"); // open in new tab
+                    } else {
+                      navigate(item.path);
+                    }
+                    setSidebarOpen(false);
+                  }}
+                  className={`px-5 py-4 text-sm cursor-pointer border-b
+          ${
+            isActive
+              ? "bg-black text-white"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          }
+        `}
+                >
+                  {item.name}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
