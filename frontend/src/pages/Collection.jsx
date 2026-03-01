@@ -3,6 +3,8 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
 import useProduct from "../hooks/useProduct";
+import SmartSearch from "../components/SmartSearch";
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const Collection = () => {
@@ -12,6 +14,9 @@ const Collection = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const location = useLocation();
+
+  const isSearchOpen = new URLSearchParams(location.search).get("search");
 
   // ✅ Unified hook
   const { products, loading } = useProduct({
@@ -19,14 +24,14 @@ const Collection = () => {
     subCategory: selectedSubCategories,
     q: searchQuery,
     page: 1,
-    limit: 20,
+    limit: 30,
   });
 
   const handleCategoryChange = (category) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((item) => item !== category)
-        : [...prev, category]
+        : [...prev, category],
     );
   };
 
@@ -34,12 +39,24 @@ const Collection = () => {
     setSelectedSubCategories((prev) =>
       prev.includes(subCategory)
         ? prev.filter((item) => item !== subCategory)
-        : [...prev, subCategory]
+        : [...prev, subCategory],
     );
   };
 
   return (
-    <div className="w-full min-h-screen mt-10 flex flex-col px-4 md:px-10">
+    <div className="w-full min-h-screen mt-2 flex flex-col px-4 md:px-10">
+      <div className="flex flex-col gap-4 mb-5">
+        {isSearchOpen && (
+          <SmartSearch onSearchChange={(value) => setSearchQuery(value)} />
+        )}
+
+        <div className="flex items-center gap-3">
+          <span className="text-2xl text-gray-600">
+            {searchQuery ? "Search Results" : "All Collections"}
+          </span>
+          <div className="w-12 h-0.5 bg-black"></div>
+        </div>
+      </div>
       <div className="flex flex-col md:flex-row gap-10">
         {/* FILTER SECTION */}
         <div className="flex flex-col gap-5 w-full md:w-65">
@@ -105,13 +122,6 @@ const Collection = () => {
 
         {/* PRODUCTS SECTION */}
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="text-2xl text-gray-600">
-              {searchQuery ? "Search Results" : "All Collections"}
-            </span>
-            <div className="w-12 h-0.5 bg-black"></div>
-          </div>
-
           {loading && (
             <div className="text-center py-10">
               <p className="text-gray-500">Loading products...</p>

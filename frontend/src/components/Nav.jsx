@@ -9,13 +9,12 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { setUser } from "../redux/features/userSlice";
-import SmartSearch from "./SmartSearch";
 import { useLocation } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
 import { IoChevronBack } from "react-icons/io5";
 
 const Nav = () => {
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [/*searchOpen*/, setSearchOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profile, setProfile] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -26,10 +25,9 @@ const Nav = () => {
   const { cart } = useSelector((state) => state.cartSlice);
 
   useEffect(() => {
-    if (location.pathname !== "/collection") {
-      setSearchOpen(false);
-    }
-  }, [location]);
+    // keep internal searchOpen in sync with URL if needed in future
+    // currently we rely on URL param `search=1` to indicate open state
+  }, []);
   const logoutHandler = async () => {
     await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/logout`, {
       withCredentials: true,
@@ -38,9 +36,7 @@ const Nav = () => {
   };
   return (
     <div
-      className={`flex w-full items-center justify-between py-3 ${
-        searchOpen ? "mb-15" : ""
-      }`}
+      className={`flex w-full items-center justify-between py-3 `}
     >
       <div className="flex items-center gap-2">
         <img className="w-15" src={logo} alt="" />
@@ -77,7 +73,21 @@ const Nav = () => {
       <div className="flex gap-2">
         <div
           onClick={() => {
-            (setSearchOpen((prev) => !prev), navigate("/collection"));
+            // Toggle search param on collection route. If already on /collection,
+            // toggle the `search` query param; otherwise navigate to collection with it.
+            const params = new URLSearchParams(location.search);
+            if (location.pathname === "/collection") {
+              if (params.get("search")) {
+                params.delete("search");
+                const search = params.toString();
+                navigate(search ? `/collection?${search}` : "/collection");
+              } else {
+                params.set("search", "1");
+                navigate(`/collection?${params.toString()}`);
+              }
+            } else {
+              navigate("/collection?search=1");
+            }
           }}
           className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-400/20"
         >
@@ -113,14 +123,7 @@ const Nav = () => {
         </div>
       </div>
 
-      {searchOpen && (
-        <div className="w-full mt-1 absolute top-15 left-0 flex items-center justify-center z-40 p-4">
-          <div className="relative w-[90%] md:w-[60%] flex items-center gap-5">
-            <SmartSearch onResultsChange={setSearchResults} />
-            <RxCross1 onClick={() => setSearchOpen(false)} size={20} />
-          </div>
-        </div>
-      )}
+      {/* Nav no longer renders SmartSearch overlay. Collection page shows it when `?search=1` is present. */}
 
       {/* Overlay */}
       {sidebarOpen && (
