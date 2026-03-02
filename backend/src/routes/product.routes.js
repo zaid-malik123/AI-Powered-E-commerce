@@ -10,6 +10,7 @@ import {
 	latestCollection,
 	getBestSellers,
 	getProducts,
+	getRelatedProducts,
 } from "../controllers/product.controllers.js";
 import { createProductValidator } from "../validators/product.validators.js";
 import { validate } from "../validators/validate.js";
@@ -33,6 +34,8 @@ router.get("/filter", getProducts)
 router.get("/latest", latestCollection)
 
 router.get("/best", getBestSellers)
+
+router.get("/related/:id", getRelatedProducts)
 
 router.get("/:id", getSingleProduct);
 

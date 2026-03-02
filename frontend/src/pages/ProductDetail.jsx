@@ -4,6 +4,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { FaHeart } from "react-icons/fa";
 import useCart from "../hooks/useCart";
+import Card from "../components/Card";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -13,6 +14,7 @@ const ProductDetail = () => {
   const [addingToCart, setAddingToCart] = useState(false);
   const [cartMessage, setCartMessage] = useState("");
   const [mainImage, setMainImage] = useState("");
+  const [relatedProduct, setRelatedProduct] = useState([]);
 
   const { user } = useSelector((state) => state.userSlice);
   const { addToCart } = useCart();
@@ -34,8 +36,21 @@ const ProductDetail = () => {
     }
   };
 
+  const fetchRelatedProducts = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/product/related/${id}`,
+      );
+
+      setRelatedProduct(res.data.relatedProducts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchDetails();
+    fetchRelatedProducts();
   }, [id]);
 
   // 👇 Jab product load ho jaye to 0th image mainImage ban jaye
@@ -155,7 +170,7 @@ const ProductDetail = () => {
             <button
               onClick={handleAddToCart}
               disabled={addingToCart}
-              className="bg-black text-white px-4 py-2  text-sm md:px-10 md:py-3 hover:bg-gray-800 transition disabled:opacity-50"
+              className="bg-black text-white px-4 py-2 text-[12px]  md:text-sm md:px-10 md:py-3 hover:bg-gray-800 transition disabled:opacity-50"
             >
               {addingToCart ? "ADDING..." : "ADD TO CART"}
             </button>
@@ -212,6 +227,17 @@ const ProductDetail = () => {
             dedicated page with relevant information.
           </p>
         </div>
+      </div>
+
+      <h2 className="flex items-center gap-2 justify-center mt-5 md:mt-15 text-xl md:text-2xl">
+        RELATED PRODUCTS
+        <div className="w-20 md:w-30 h-[1px] bg-gray-400"></div>
+      </h2>
+
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-5 mt-5 md:mt-10">
+        {relatedProduct?.map((item) => (
+          <Card item={item} />
+        ))}
       </div>
     </div>
   );
