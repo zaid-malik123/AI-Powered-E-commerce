@@ -182,3 +182,35 @@ export const getBestSellers = async (req, res) => {
     });
   }
 };
+
+export const getRelatedProducts = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    const relatedProducts = await Product.find({
+      _id: { $ne: id }, 
+      category: product.category,
+      subCategory: product.subCategory,
+    }).limit(5);
+
+    return res.status(200).json({
+      success: true,
+      relatedProducts,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

@@ -181,6 +181,38 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* DESCRIPTION & REVIEWS UI */}
+      <div className="mt-20 border border-gray-200 rounded-sm">
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200 bg-gray-50">
+          <h2 className="px-8 py-4 text-sm font-semibold border-b-2 border-black text-black cursor-pointer">
+            Description
+          </h2>
+
+          <h2 className="px-8 py-4 text-sm font-semibold text-gray-500 hover:text-black cursor-pointer">
+            Reviews (122)
+          </h2>
+        </div>
+
+        {/* Content */}
+        <div className="p-8 text-gray-600 leading-relaxed text-sm md:text-base space-y-4">
+          <p>
+            An e-commerce website is an online platform that facilitates the
+            buying and selling of products or services over the internet. It
+            serves as a virtual marketplace where businesses and individuals can
+            showcase their products, interact with customers, and conduct
+            transactions without the need for a physical presence.
+          </p>
+
+          <p>
+            E-commerce websites typically display products or services along
+            with detailed descriptions, images, prices, and any available
+            variations (e.g., sizes, colors). Each product usually has its own
+            dedicated page with relevant information.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
