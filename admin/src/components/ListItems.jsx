@@ -10,6 +10,8 @@ const ListItems = () => {
       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/product/all`, {
         withCredentials: true
       });
+
+      console.log(res.data)
       setProducts(res.data);
     } catch (error) {
       console.error("Error fetching products", error);
@@ -54,7 +56,7 @@ const ListItems = () => {
                 {/* Image */}
                 <td className="p-4">
                   <img
-                    src={product.image}
+                    src={product.image[0]}
                     alt={product.name}
                     className="w-16 h-16 object-cover rounded"
                   />

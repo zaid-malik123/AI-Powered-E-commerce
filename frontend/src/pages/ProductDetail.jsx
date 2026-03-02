@@ -12,11 +12,11 @@ const ProductDetail = () => {
   const [fav, setFav] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [cartMessage, setCartMessage] = useState("");
+  const [mainImage, setMainImage] = useState("");
 
   const { user } = useSelector((state) => state.userSlice);
   const { addToCart } = useCart();
   const navigate = useNavigate();
-
   const { id } = useParams();
 
   const fetchDetails = async () => {
@@ -25,6 +25,7 @@ const ProductDetail = () => {
         `${import.meta.env.VITE_BASE_URL}/api/product/${id}`,
         { withCredentials: true },
       );
+
       setProduct(res.data.product);
     } catch (error) {
       console.log(error);
@@ -36,6 +37,13 @@ const ProductDetail = () => {
   useEffect(() => {
     fetchDetails();
   }, [id]);
+
+  // 👇 Jab product load ho jaye to 0th image mainImage ban jaye
+  useEffect(() => {
+    if (product?.image?.length > 0) {
+      setMainImage(product.image[0]);
+    }
+  }, [product]);
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -68,39 +76,76 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="min-h-screen max-w-6xl mx-auto px-4 py-10">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Product Image */}
-        <div className="w-full">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-125 object-cover rounded-lg"
-          />
+    <div className="min-h-screen bg-white max-w-7xl mx-auto px-6 py-14">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        {/* LEFT SIDE - IMAGE SECTION */}
+        <div className="flex flex-col-reverse lg:flex-row gap-6">
+          {/* Thumbnails */}
+          <div className="flex flex-row lg:flex-col gap-4 justify-center">
+            {product.image.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                onClick={() => setMainImage(img)}
+                className={`w-20 h-24 object-cover border cursor-pointer transition ${
+                  mainImage === img ? "border-black" : "border-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Main Image */}
+          <div className="flex-1">
+            <img
+              src={mainImage}
+              alt={product.name}
+              className="w-full h-[400px] lg:h-[550px] object-cover"
+            />
+          </div>
         </div>
 
-        {/* Product Info */}
+        {/* RIGHT SIDE - INFO SECTION */}
         <div className="flex flex-col gap-6">
-          <h1 className="text-3xl font-semibold">{product.name}</h1>
+          <h1 className="text-4xl font-semibold tracking-wide">
+            {product.name}
+          </h1>
 
-          <p className="text-2xl font-bold text-gray-900">${product.price}</p>
+          <div className="flex items-center gap-2 text-sm">
+            <div className="text-red-500">★★★★★</div>
+            <span className="text-gray-500">(122 Reviews)</span>
+          </div>
 
-          <p className="text-gray-600 leading-relaxed">
-            {product.description}
-          </p>
+          <p className="text-3xl font-bold text-gray-900">${product.price}</p>
 
-          {/* Quantity */}
-          <div className="flex items-center gap-4">
-            <div className="flex border rounded-md">
+          <p className="text-gray-600 leading-relaxed">{product.description}</p>
+
+          {/* Size Selection */}
+          <div>
+            <p className="font-medium mb-3">Select Size</p>
+            <div className="flex gap-3">
+              {product.sizes?.map((size) => (
+                <button
+                  key={size}
+                  className="border px-5 py-2 hover:bg-black hover:text-white transition"
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quantity + Add To Cart */}
+          <div className="flex items-center gap-5 mt-4">
+            <div className="flex border text-sm md:text-xl">
               <button
-                className="px-4 py-2 hover:bg-gray-100"
+                className="px-4 py-2"
                 onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}
               >
                 -
               </button>
               <span className="px-4 py-2">{quantity}</span>
               <button
-                className="px-4 py-2 hover:bg-gray-100"
+                className="px-4 py-2"
                 onClick={() => setQuantity(quantity + 1)}
               >
                 +
@@ -110,39 +155,29 @@ const ProductDetail = () => {
             <button
               onClick={handleAddToCart}
               disabled={addingToCart}
-              className="bg-black text-white px-8 py-3 rounded-md hover:bg-gray-800 transition disabled:opacity-50"
+              className="bg-black text-white px-4 py-2  text-sm md:px-10 md:py-3 hover:bg-gray-800 transition disabled:opacity-50"
             >
-              {addingToCart ? "Adding..." : "Add to Cart"}
+              {addingToCart ? "ADDING..." : "ADD TO CART"}
             </button>
 
             <button
               onClick={() => setFav(!fav)}
-              className={`p-3 border rounded-md transition ${
-                fav ? "text-red-500 border-red-400" : "text-gray-500 border-gray-300"
+              className={`p-3 border transition ${
+                fav
+                  ? "text-red-500 border-red-400"
+                  : "text-gray-500 border-gray-300"
               }`}
             >
-              <FaHeart size={20} />
+              <FaHeart size={18} />
             </button>
           </div>
 
-          {/* Cart Message */}
-          {cartMessage && (
-            <p
-              className={`text-sm font-semibold ${
-                cartMessage.includes("✓")
-                  ? "text-green-600"
-                  : "text-red-600"
-              }`}
-            >
-              {cartMessage}
-            </p>
-          )}
+          {cartMessage && <p className="text-sm mt-2">{cartMessage}</p>}
 
-          {/* Extra Info */}
-          <div className="text-sm text-gray-600 space-y-1">
-            <p>✔ 100% Original Product</p>
-            <p>✔ Cash on Delivery Available</p>
-            <p>✔ Easy Returns within 7 days</p>
+          <div className="text-sm text-gray-600 space-y-2 mt-6">
+            <p>✔ 100% Original product</p>
+            <p>✔ Cash on delivery available</p>
+            <p>✔ Easy return within 7 days</p>
           </div>
         </div>
       </div>

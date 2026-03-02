@@ -82,6 +82,8 @@ const AddItems = () => {
         { withCredentials: true }
       );
 
+      console.log(res.data)
+
       alert(res.data.message);
 
       // Reset form

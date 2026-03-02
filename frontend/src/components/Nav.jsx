@@ -4,7 +4,6 @@ import { FaOpencart } from "react-icons/fa";
 import { CiUser } from "react-icons/ci";
 import { CiMenuBurger } from "react-icons/ci";
 import { useEffect, useState } from "react";
-import { IoIosLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -138,7 +137,7 @@ const Nav = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full font-mono w-[90%] bg-white z-50
+        className={`fixed top-0 right-0 h-full font-sans w-[90%] bg-white z-50
   transform transition-transform duration-300
   ${sidebarOpen ? "translate-x-0" : "translate-x-full"}`}
       >
@@ -179,7 +178,7 @@ const Nav = () => {
                     }
                     setSidebarOpen(false);
                   }}
-                  className={`px-5 py-4 text-sm cursor-pointer border-b
+                  className={`px-5 py-4 text-md font-semibold cursor-pointer border-b
           ${
             isActive
               ? "bg-black text-white"
