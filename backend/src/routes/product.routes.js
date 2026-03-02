@@ -18,7 +18,7 @@ const router = express.Router()
 
 router.post(
 	"/create",
-	upload.single("image"),
+	upload.array("images", 5),
 	isAuth,
 	isAdmin,
 	createProductValidator,

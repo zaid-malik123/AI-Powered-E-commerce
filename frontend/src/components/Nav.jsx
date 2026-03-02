@@ -138,7 +138,7 @@ const Nav = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full font-mono w-full bg-white z-50
+        className={`fixed top-0 right-0 h-full font-mono w-[90%] bg-white z-50
   transform transition-transform duration-300
   ${sidebarOpen ? "translate-x-0" : "translate-x-full"}`}
       >

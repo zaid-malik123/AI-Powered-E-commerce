@@ -31,12 +31,14 @@ const productSchema = new mongoose.Schema(
     },
 
     sizes: {
-      type: String,
+      type: [String],
       enum: ["S", "M", "L", "XL", "XXL"],
     },
 
     image: {
-      type: String,
+      type: [
+        String
+      ],
       required: true,
     },
     totalSold: {

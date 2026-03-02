@@ -4,12 +4,13 @@ import { uploadImage } from "../services/imageKit.service.js";
 export const createProductController = async (req, res) => {
   try {
     const { name, description, category, price, sizes, subCategory } = req.body;
-    let imageUrl = "";
 
-    if (req.file) {
-      const uploadedImage = await uploadImage(req.file);
-      imageUrl = uploadedImage.url;
-    }
+    const imageUrls = req.files?.length
+      ? (await Promise.all(req.files.map((file) => uploadImage(file)))).map(
+          (img) => img.url,
+        )
+      : [];
+
 
     const product = await Product.create({
       name,
@@ -18,7 +19,7 @@ export const createProductController = async (req, res) => {
       subCategory,
       price,
       sizes,
-      image: imageUrl,
+      image: imageUrls,
     });
 
     return res.status(201).json({
@@ -26,7 +27,6 @@ export const createProductController = async (req, res) => {
       message: "Product created successfully",
       product,
     });
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({
@@ -38,27 +38,20 @@ export const createProductController = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({}).sort({createdAt: -1})
+    const products = await Product.find({}).sort({ createdAt: -1 });
 
-    return res.status(200).json(products)
-
+    return res.status(200).json(products);
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Server error",
     });
   }
-}
+};
 
 export const getProducts = async (req, res) => {
   try {
-    const { 
-      category, 
-      subCategory, 
-      q, 
-      page = 1, 
-      limit = 30 
-    } = req.query;
+    const { category, subCategory, q, page = 1, limit = 30 } = req.query;
 
     const filter = {};
 
@@ -93,7 +86,6 @@ export const getProducts = async (req, res) => {
       totalPages: Math.ceil(total / limit),
       products,
     });
-
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -121,7 +113,6 @@ export const getSingleProduct = async (req, res) => {
       success: true,
       product,
     });
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -150,7 +141,6 @@ export const deleteProduct = async (req, res) => {
       success: true,
       message: "Product deleted successfully",
     });
-
   } catch (error) {
     console.error("Delete Product Error:", error);
     return res.status(500).json({
@@ -162,15 +152,12 @@ export const deleteProduct = async (req, res) => {
 
 export const latestCollection = async (req, res) => {
   try {
-    const products = await Product.find({})
-      .sort({ createdAt: -1 })
-      .limit(10);
+    const products = await Product.find({}).sort({ createdAt: -1 }).limit(10);
 
     return res.status(200).json({
       success: true,
       products,
     });
-
   } catch (error) {
     console.error("Latest Collection Error:", error);
     return res.status(500).json({
@@ -182,9 +169,7 @@ export const latestCollection = async (req, res) => {
 
 export const getBestSellers = async (req, res) => {
   try {
-    const bestSellers = await Product.find()
-      .sort({ totalSold: -1 }) 
-      .limit(5);
+    const bestSellers = await Product.find().sort({ totalSold: -1 }).limit(5);
 
     res.status(200).json({
       success: true,

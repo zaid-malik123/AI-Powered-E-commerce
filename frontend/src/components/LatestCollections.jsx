@@ -24,7 +24,7 @@ const LatestCollections = () => {
            <h1 className="md:text-[40px] text-[30px] font-[400] tracking-[1.2px]">
           Latest <span className="text-gray-500">Collections</span>
         </h1>
-        <div className="md:w-30 w-20 h-[1px] bg-gray-700" />
+        <div className="md:w-20 w-12 h-[1px] bg-gray-700" />
        </div>
        <p className="text-gray-500 text-sm md:text-md text-center font-mono mt-2">
   Discover our newest arrivals crafted with style and comfort in mind.
