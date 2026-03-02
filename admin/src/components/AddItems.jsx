@@ -8,11 +8,13 @@ const AddItems = () => {
     category: "Men",
     subCategory: "Topwear",
     price: "",
-    sizes: "S",
   });
 
-  const [image, setImage] = useState(null);
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const sizeOptions = ["S", "M", "L", "XL", "XXL"];
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -21,43 +23,79 @@ const AddItems = () => {
     }));
   };
 
+  const handleSizeToggle = (size) => {
+    setSelectedSizes((prev) =>
+      prev.includes(size)
+        ? prev.filter((s) => s !== size)
+        : [...prev, size]
+    );
+  };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+
+    if (files.length > 5) {
+      alert("Maximum 5 images allowed");
+      return;
+    }
+
+    setImages(files);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (selectedSizes.length === 0) {
+      alert("Please select at least one size");
+      return;
+    }
+
+    if (images.length === 0) {
+      alert("Please upload at least one image");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const data = new FormData();
+
       data.append("name", formData.name);
       data.append("description", formData.description);
       data.append("category", formData.category);
       data.append("subCategory", formData.subCategory);
       data.append("price", formData.price);
-      data.append("sizes", formData.sizes);
-      data.append("image", image);
+
+      // append multiple sizes
+      selectedSizes.forEach((size) => {
+        data.append("sizes", size);
+      });
+
+      // append multiple images
+      images.forEach((img) => {
+        data.append("images", img);
+      });
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/product/create`,
         data,
-        {
-          withCredentials: true
-        },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        { withCredentials: true }
       );
 
       alert(res.data.message);
+
+      // Reset form
       setFormData({
         name: "",
         description: "",
         category: "Men",
         subCategory: "Topwear",
         price: "",
-        sizes: "S",
       });
-      setImage(null);
+
+      setSelectedSizes([]);
+      setImages([]);
+
     } catch (error) {
       console.error(error);
       alert("Error creating product");
@@ -66,20 +104,18 @@ const AddItems = () => {
     setLoading(false);
   };
 
-  
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
 
-      {/* Upload Image */}
+      {/* Upload Images */}
       <div>
-        <label className="block font-medium mb-2">Upload Image</label>
+        <label className="block font-medium mb-2">Upload Images (Max 5)</label>
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setImage(e.target.files[0])}
+          multiple
+          onChange={handleImageChange}
           className="border p-2 w-full"
-          required
         />
       </div>
 
@@ -98,7 +134,7 @@ const AddItems = () => {
 
       {/* Description */}
       <div>
-        <label className="block font-medium mb-2">Description</label>
+        <label className="block font-medium mb-2">Product Description</label>
         <textarea
           name="description"
           value={formData.description}
@@ -109,7 +145,7 @@ const AddItems = () => {
         />
       </div>
 
-      {/* Category + SubCategory */}
+      {/* Category & SubCategory */}
       <div className="flex gap-4">
         <div className="flex-1">
           <label className="block font-medium mb-2">Category</label>
@@ -142,7 +178,7 @@ const AddItems = () => {
 
       {/* Price */}
       <div>
-        <label className="block font-medium mb-2">Price</label>
+        <label className="block font-medium mb-2">Product Price</label>
         <input
           type="number"
           name="price"
@@ -153,24 +189,29 @@ const AddItems = () => {
         />
       </div>
 
-      {/* Size */}
+      {/* Sizes */}
       <div>
-        <label className="block font-medium mb-2">Size</label>
-        <select
-          name="sizes"
-          value={formData.sizes}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-        >
-          <option>S</option>
-          <option>M</option>
-          <option>L</option>
-          <option>XL</option>
-          <option>XXL</option>
-        </select>
+        <label className="block font-medium mb-2">Product Sizes</label>
+        <div className="flex gap-3 flex-wrap">
+          {sizeOptions.map((size) => (
+            <button
+              type="button"
+              key={size}
+              onClick={() => handleSizeToggle(size)}
+              className={`px-4 py-2 border rounded 
+                ${
+                  selectedSizes.includes(size)
+                    ? "bg-black text-white"
+                    : "bg-gray-100"
+                }`}
+            >
+              {size}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Submit Button */}
+      {/* Submit */}
       <button
         type="submit"
         disabled={loading}
