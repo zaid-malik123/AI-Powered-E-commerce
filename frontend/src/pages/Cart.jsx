@@ -94,9 +94,7 @@ const Cart = () => {
   };
 
   const handleClearCart = async () => {
-    if (window.confirm("Are you sure you want to clear your cart?")) {
-      await clearCartItems();
-    }
+     await clearCartItems();
   };
 
   // While initializing, show loading

@@ -54,7 +54,7 @@ const MyOrders = () => {
                 <div className="flex items-center gap-4 flex-1">
                   <img
                     src={
-                      item.product?.image || "https://via.placeholder.com/80"
+                      item.product?.image[0] || "https://via.placeholder.com/80"
                     }
                     alt={item.product?.name}
                     className="w-20 h-20 object-cover rounded"

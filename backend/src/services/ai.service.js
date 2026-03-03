@@ -5,12 +5,12 @@ import { tool } from "@langchain/core/tools";
 import { MessagesAnnotation, StateGraph, END } from "@langchain/langgraph";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { AIMessage, ToolMessage } from "@langchain/core/messages";
-import { SystemMessage } from "@langchain/core/messages"; 
+import { SystemMessage } from "@langchain/core/messages";
 
 const searchProductsTool = tool(
   async ({ query }) => {
     const response = await axios.get(
-      `http://localhost:3000/api/product/search?q=${query}`,
+      `http://localhost:3000/api/product/filter?q=${query}`,
     );
 
     return JSON.stringify(response.data);
@@ -24,6 +24,19 @@ const searchProductsTool = tool(
       query: z.string().describe("The search query for products"),
     }),
   },
+);
+const searchBestSellingProduct = tool(
+  async () => {
+    const response = await axios.get(
+      `http://localhost:3000/api/product/best`
+    );
+    return JSON.stringify(response.data);
+  },
+  {
+    name: "search_best_sellers",
+    description: "Fetch best selling products",
+    schema: z.object({}), 
+  }
 );
 
 const systemPrompt = `
@@ -104,6 +117,12 @@ IMPORTANT DECISION POLICY:
   3. Then IMMEDIATELY call the add_to_cart tool with:
      - productId from the selected product
      - quantity = 1 if not mentioned
+  
+  When a user asks about best seller products:
+You MUST call the "search_best_sellers" tool first.
+Then extract only the product names from the tool response.
+Return only a clean list of names.
+Do not add descriptions or extra text.
 
 - Do NOT ask the user for product ID if a reasonable product
   can be found automatically.
@@ -115,12 +134,10 @@ IMPORTANT DECISION POLICY:
 
 
 
-`
+`;
 
 const addToCartTool = tool(
-  async ({ productId, quantity=1, token }) => {
-
-
+  async ({ productId, quantity = 1, token }) => {
     const response = await axios.post(
       `http://localhost:3000/api/cart/add`,
       {
@@ -145,11 +162,8 @@ const addToCartTool = tool(
       productId: z
         .string()
         .describe("The ID of the product to add to the cart"),
-        quantity: z.number().describe("The quantity of the product to add"),
-        token: z
-        .string()
-        .optional()
-        .describe("The JWT token for authentication"),
+      quantity: z.number().describe("The quantity of the product to add"),
+      token: z.string().optional().describe("The JWT token for authentication"),
     }),
   },
 );
@@ -162,18 +176,17 @@ const model = new ChatGoogleGenerativeAI({
 const toolByName = {
   search_products: searchProductsTool,
   add_to_cart: addToCartTool,
+  search_best_sellers: searchBestSellingProduct,
 };
 
-const systemMessage = new SystemMessage(systemPrompt); 
+const systemMessage = new SystemMessage(systemPrompt);
 
 const modelWithTools = model.bindTools(Object.values(toolByName));
 
 async function agentNode(state) {
-
   const messagesWithSystem = [systemMessage, ...state.messages];
-  
-  const response = await modelWithTools.invoke(messagesWithSystem);
 
+  const response = await modelWithTools.invoke(messagesWithSystem);
 
   return {
     ...state,
@@ -188,7 +201,6 @@ async function agentNode(state) {
 }
 
 const toolNode = async (state, config) => {
-
   const lastMessage = state.messages[state.messages.length - 1];
 
   if (!lastMessage.tool_calls?.length) {
