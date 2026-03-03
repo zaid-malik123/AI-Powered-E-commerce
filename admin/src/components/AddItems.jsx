@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 const AddItems = () => {
@@ -82,9 +83,8 @@ const AddItems = () => {
         { withCredentials: true }
       );
 
-      console.log(res.data)
-
-      alert(res.data.message);
+      console.log(res.data);
+      toast.success(res.data.message || "Product created.", { toastId: "admin-create-product" });
 
       // Reset form
       setFormData({
@@ -100,7 +100,7 @@ const AddItems = () => {
 
     } catch (error) {
       console.error(error);
-      alert("Error creating product");
+      toast.error("Error creating product", { toastId: "admin-create-error" });
     }
 
     setLoading(false);

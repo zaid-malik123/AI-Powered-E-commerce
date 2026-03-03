@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 const ListItems = () => {
@@ -20,11 +21,17 @@ const ListItems = () => {
 
   const handleDeleteProduct = async (id) => {
 
-    const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/product/delete/${id}`, {
-      withCredentials: true
-    })
-
-    console.log(res.data)
+    try {
+      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/product/delete/${id}`, {
+        withCredentials: true
+      });
+      console.log(res.data);
+      toast.info(res.data.message || "Product deleted.", { toastId: `admin-delete-${id}` });
+      fetchProducts();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete product", { toastId: `admin-delete-error-${id}` });
+    }
   }
   
   useEffect(() => {
