@@ -54,6 +54,8 @@ const ProductDetail = () => {
   useEffect(() => {
     fetchDetails();
     fetchRelatedProducts();
+    // scroll to top when product id changes (useful for related-product navigation)
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
 
   // 👇 Jab product load ho jaye to 0th image mainImage ban jaye
