@@ -7,8 +7,6 @@ export const createOrder = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    console.log("THIS IS THE REQ BODY :- ", req.body)
-
     const user = await User.findById(userId)
 
     const { items, address, paymentMethod, totalAmount } = req.body;
@@ -31,7 +29,6 @@ export const createOrder = async (req, res) => {
       address,
     });
 
-    console.log("THIS IS THE ORDER :- ", order)
 
 
     await Promise.all(
