@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -62,10 +63,7 @@ const ProductDetail = () => {
   }, [product]);
 
   const handleAddToCart = async () => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
+    // allow guest users to add to cart; login will be requested at checkout
 
     setAddingToCart(true);
     setCartMessage("");
@@ -73,6 +71,7 @@ const ProductDetail = () => {
     const result = await addToCart(product._id, quantity);
 
     if (result.success) {
+      toast.success("Item added to cart.", { toastId: "cart-add" });
       setCartMessage("✓ Added to cart successfully!");
       setQuantity(1);
       setTimeout(() => setCartMessage(""), 3000);

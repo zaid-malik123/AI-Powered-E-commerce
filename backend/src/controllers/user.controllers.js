@@ -15,7 +15,7 @@ export const signup = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "Your account already exist please login" });
     }
 
     if (passwordStr.length < 6) {
@@ -63,12 +63,12 @@ export const login = async (req, res) => {
     // 🔍 Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "User does not exist" });
+      return res.status(400).json({ message: "Your account does not exist Please SignUp" });
     }
 
     const compare = await bcrypt.compare(passwordStr, user.password);
     if (!compare) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Please enter correct Password" });
     }
 
     const token = await genToken(user._id, user.role);

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -21,32 +22,24 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [isInitializing, setIsInitializing] = useState(true);
-  const [hasCheckedUser, setHasCheckedUser] = useState(false);
 
   // Fetch cart on mount or when user changes
   useEffect(() => {
     const initCart = async () => {
       setIsInitializing(true);
-      
-      // Give app time to load user state on first mount
-      if (!hasCheckedUser) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        setHasCheckedUser(true);
-      }
 
       if (user) {
         await fetchCart();
-        setIsInitializing(false);
-      } else if (hasCheckedUser) {
-        // Only redirect after we've confirmed user doesn't exist
-        console.log("No user found, redirecting to login");
-        setIsInitializing(false);
-        navigate("/login");
+      } else {
+        // load guest cart from hook (fetchCart handles it)
+        await fetchCart();
       }
+
+      setIsInitializing(false);
     };
 
     initCart();
-  }, [user, fetchCart, navigate, hasCheckedUser]);
+  }, [user, fetchCart]);
 
   // Update local state when cart changes
   useEffect(() => {
@@ -97,6 +90,7 @@ const Cart = () => {
 
   const handleRemoveItem = async (productId) => {
     await removeFromCart(productId);
+    toast.info("Item removed from cart.", { toastId: `cart-remove-${productId}` });
   };
 
   const handleClearCart = async () => {
@@ -114,21 +108,6 @@ const Cart = () => {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-xl text-gray-600 mb-4">Please login to view cart</p>
-          <button
-            onClick={() => navigate("/login")}
-            className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -266,7 +245,13 @@ const Cart = () => {
                   </div>
                 </div>
 
-                <button onClick={() => navigate("/checkout")} className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 transition font-semibold mb-3">
+                <button
+                  onClick={() => {
+                    // always allow navigation to checkout; login will be requested when placing order
+                    navigate("/checkout");
+                  }}
+                  className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 transition font-semibold mb-3"
+                >
                   Proceed to Checkout
                 </button>
 

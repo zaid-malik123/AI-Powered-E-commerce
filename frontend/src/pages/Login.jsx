@@ -1,13 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginform } from "../validator/formValidator";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/features/userSlice";
+import { toast } from "react-toastify";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch()
+  const location = useLocation();
 
   const {
     register,
@@ -19,9 +21,42 @@ const Login = () => {
   });
 
   const onSubmit = async (data) => {
-    const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/user/login`, data, {withCredentials: true})
-    dispatch(setUser(res.data))
-    navigate("/")
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/user/login`,
+        data,
+        { withCredentials: true }
+      );
+      dispatch(setUser(res.data));
+
+      // merge guest cart
+      try {
+        const stored = localStorage.getItem("guestCart");
+        if (stored) {
+          const items = JSON.parse(stored);
+          for (const item of items) {
+            await axios.post(
+              `${import.meta.env.VITE_BASE_URL}/api/cart/add`,
+              { productId: item.productId, quantity: item.quantity },
+              { withCredentials: true }
+            );
+          }
+          localStorage.removeItem("guestCart");
+        }
+      } catch (err) {
+        console.error("Error merging guest cart on login", err);
+      }
+
+      const dest = location.state?.from || "/";
+      const extraState = {};
+      if (location.state?.checkoutData) {
+        extraState.checkoutData = location.state.checkoutData;
+      }
+      navigate(dest, { state: extraState });
+    } catch (err) {
+      const message = err.response?.data?.message || "Login failed";
+      toast.error(message, { toastId: "login-error" });
+    }
   };
 
   return (

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {signupform} from "../validator/formValidator"
 import axios from "axios"
+import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/features/userSlice";
 
@@ -20,9 +21,19 @@ const Signup = () => {
   });
 
   const formData = async (data) => {
-    const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/user/signup`, data, {withCredentials:true} )
-    dispatch(setUser(res.data))
-    // yaha API call aayegi future me
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/user/signup`,
+        data,
+        { withCredentials: true }
+      );
+      dispatch(setUser(res.data));
+      // optionally navigate after signup
+      navigate("/");
+    } catch (err) {
+      const message = err.response?.data?.message || "Signup failed";
+      toast.error(message, { toastId: "signup-error" });
+    }
   };
 
   return (

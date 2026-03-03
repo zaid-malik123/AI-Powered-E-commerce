@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setCart,  clearCart, setCartTotal } from "../redux/features/cartSlice";
@@ -10,9 +10,32 @@ export const useCart = () => {
   const { cart } = useSelector((state) => state.cartSlice);
   const { user } = useSelector((state) => state.userSlice);
 
+  // When the hook initializes, make sure guest cart stored in localStorage is loaded into redux
+  useEffect(() => {
+    if (!user) {
+      try {
+        const stored = localStorage.getItem("guestCart");
+        const items = stored ? JSON.parse(stored) : [];
+        dispatch(setCart(items));
+      } catch (err) {
+        console.error("Error loading guest cart from storage", err);
+      }
+    }
+  }, [user, dispatch]);
+
   // Fetch cart from server - memoized to prevent recreation
   const fetchCart = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      // load guest cart from localStorage
+      try {
+        const stored = localStorage.getItem("guestCart");
+        const items = stored ? JSON.parse(stored) : [];
+        dispatch(setCart(items));
+      } catch (err) {
+        console.error("Error reading guest cart from storage", err);
+      }
+      return;
+    }
 
     try {
       setLoading(true);
@@ -51,6 +74,36 @@ export const useCart = () => {
 
   // Add item to cart
   const addToCart = async (productId, quantity = 1) => {
+    if (!user) {
+      // guest cart
+      try {
+        // copy existing cart from redux
+        const existing = cart.slice();
+        const idx = existing.findIndex((i) => i.productId === productId);
+        if (idx > -1) {
+          existing[idx].quantity += quantity;
+        } else {
+          // fetch price from server so totals show correctly
+          let priceAtThatTime = 0;
+          try {
+            const res = await axios.get(
+              `${import.meta.env.VITE_BASE_URL}/api/product/${productId}`
+            );
+            priceAtThatTime = res.data.product.price || 0;
+          } catch (err) {
+            console.error("Error fetching product price for guest cart", err);
+          }
+          existing.push({ productId, quantity, priceAtThatTime });
+        }
+        dispatch(setCart(existing));
+        localStorage.setItem("guestCart", JSON.stringify(existing));
+        return { success: true };
+      } catch (err) {
+        console.error("Error adding to guest cart", err);
+        return { success: false };
+      }
+    }
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/cart/add`,
@@ -70,6 +123,26 @@ export const useCart = () => {
 
   // Update item quantity
   const updateQuantity = async (productId, quantity) => {
+    if (!user) {
+      // guest: update local cart
+      try {
+        const existing = cart.slice();
+        const idx = existing.findIndex((i) => i.productId === productId);
+        if (idx === -1) return { success: false };
+        if (quantity <= 0) {
+          existing.splice(idx, 1);
+        } else {
+          existing[idx].quantity = quantity;
+        }
+        dispatch(setCart(existing));
+        localStorage.setItem("guestCart", JSON.stringify(existing));
+        return { success: true };
+      } catch (err) {
+        console.error("Error updating guest cart", err);
+        return { success: false };
+      }
+    }
+
     try {
       const response = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/cart/update`,
@@ -91,6 +164,18 @@ export const useCart = () => {
 
   // Remove item from cart
   const removeFromCart = async (productId) => {
+    if (!user) {
+      try {
+        const existing = cart.slice().filter((i) => i.productId !== productId);
+        dispatch(setCart(existing));
+        localStorage.setItem("guestCart", JSON.stringify(existing));
+        return { success: true };
+      } catch (err) {
+        console.error("Error removing guest cart item", err);
+        return { success: false };
+      }
+    }
+
     try {
       const response = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/api/cart/remove`,
@@ -114,6 +199,17 @@ export const useCart = () => {
 
   // Clear entire cart
   const clearCartItems = async () => {
+    if (!user) {
+      try {
+        dispatch(clearCart());
+        localStorage.removeItem("guestCart");
+        return { success: true };
+      } catch (err) {
+        console.error("Error clearing guest cart", err);
+        return { success: false };
+      }
+    }
+
     try {
       const response = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/api/cart/remove-all-cart`,

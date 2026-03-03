@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { checkoutform } from "../validator/formValidator";
 import { useSelector } from "react-redux";
 import useCart from "../hooks/useCart";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 const CheckOut = () => {
   const [paymentMethod, setPaymentMethod] = useState("online");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,6 +14,7 @@ const CheckOut = () => {
   const { user } = useSelector((state) => state.userSlice);
   const { cart, getCartTotal } = useCart();
 
+  const location = useLocation();
   const navigate = useNavigate()
 
   const totalAmount = cart.reduce((total, item) => {
@@ -40,10 +41,44 @@ const CheckOut = () => {
     },
   });
 
+  // if we came back from login with saved checkout data, populate form
+  useEffect(() => {
+    const saved = location.state?.checkoutData;
+    if (saved) {
+      reset({
+        firstName: saved.firstName || "",
+        lastName: saved.lastName || "",
+        email: saved.email || user?.email || "",
+        street: saved.street || "",
+        city: saved.city || "",
+        state: saved.state || "",
+        zipcode: saved.zipcode || "",
+        country: saved.country || "",
+        phone: saved.phone || "",
+      });
+      // also restore payment method
+      if (saved.paymentMethod) setPaymentMethod(saved.paymentMethod);
+    }
+  }, [location.state, reset, user]);
+
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    // require login before placing order; if not logged in store form state
+    if (!user) {
+      toast.error("Please login to continue.", { toastId: "checkout-login" });
+      navigate("/login", {
+        state: {
+          from: "/checkout",
+          checkoutData: { ...data, paymentMethod },
+        },
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     if (paymentMethod === "cod") {
    
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/order/create`, {
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/api/order/create`, {
         items: cart,
         address: {
           street: data.street,
@@ -56,7 +91,9 @@ const CheckOut = () => {
         paymentMethod: "cod",
       }, {withCredentials: true});
 
-      navigate("/confirm")
+      toast.success("Payment successful.", { toastId: "payment-success" });
+      navigate("/confirm");
+      setIsSubmitting(false);
     }
 
     if (paymentMethod === "online") {
@@ -78,27 +115,30 @@ const CheckOut = () => {
         order_id: order.id,
         handler: async function (response) {
           // Verify payment on the server
-          const verifyRes = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/payment/verify`, {
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            items: cart,
-            address: {
-              street: data.street,
-              city: data.city,
-              state: data.state,
-              zipcode: data.zipcode,
-              country: data.country,
-            },
-            totalAmount: totalAmount,
-          }, {withCredentials: true});
+            const verifyRes = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/payment/verify`, {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              items: cart,
+              address: {
+                street: data.street,
+                city: data.city,
+                state: data.state,
+                zipcode: data.zipcode,
+                country: data.country,
+              },
+              totalAmount: totalAmount,
+            }, {withCredentials: true});
 
-          if (verifyRes.data.success) {
-            navigate("/confirm")
-          } else {
-            alert("Payment verification failed. Please try again.");
-          }
-        },
+            if (verifyRes.data.success) {
+              toast.success("Payment successful.", { toastId: "payment-success" });
+              navigate("/confirm");
+              setIsSubmitting(false);
+            } else {
+              toast.error("Payment failed. Please try again.", { toastId: "payment-fail" });
+              setIsSubmitting(false);
+            }
+          },
         prefill: {
           name: `${data.firstName} ${data.lastName}`,
           email: data.email,
@@ -111,6 +151,7 @@ const CheckOut = () => {
 
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
+      // do not clear isSubmitting here; it will be handled in handler
     }
     
     
