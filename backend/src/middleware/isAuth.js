@@ -13,8 +13,6 @@ export const isAuth = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
     }
 
-    console.log("THIS IS THE TOKEN :- ", token)
-
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
     }

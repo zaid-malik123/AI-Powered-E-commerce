@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Loader from "../components/Loader";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -83,7 +84,7 @@ const ProductDetail = () => {
   };
 
   if (loading) {
-    return <p className="text-center py-20">Loading product...</p>;
+    return <Loader text="Loading product..." />;
   }
 
   if (!product) {

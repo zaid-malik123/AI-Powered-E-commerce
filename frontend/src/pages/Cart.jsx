@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Loader from "../components/Loader";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
@@ -101,7 +102,7 @@ const Cart = () => {
   if (isInitializing) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-gray-600">Loading...</p>
+        <Loader text="Loading..." />
       </div>
     );
   }

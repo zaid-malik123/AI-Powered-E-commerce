@@ -3,6 +3,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
 import useProduct from "../hooks/useProduct";
+import Loader from "../components/Loader";
 import SmartSearch from "../components/SmartSearch";
 import { useLocation, useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
@@ -139,9 +140,7 @@ const Collection = () => {
             <div className="w-12 h-0.5 bg-black"></div>
           </div>
           {loading && (
-            <div className="text-center py-10">
-              <p className="text-gray-500">Loading products...</p>
-            </div>
+            <Loader text="Loading products..." />
           )}
 
           {!loading && products.length === 0 && (

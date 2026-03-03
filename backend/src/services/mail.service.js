@@ -3,11 +3,10 @@ import "dotenv/config";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// ================= OTP MAIL =================
 export const sendOtpMail = async (to, otp) => {
   try {
     await resend.emails.send({
-      from: "onboarding@resend.dev", // testing sender
+      from: "onboarding@resend.dev", 
       to,
       subject: "Password Reset OTP - OUTFYT",
       html: `
@@ -47,7 +46,6 @@ export const sendOtpMail = async (to, otp) => {
   }
 };
 
-// ================= WELCOME MAIL =================
 export const sendWelcomeMail = async (to, name) => {
   try {
     await resend.emails.send({
@@ -88,7 +86,6 @@ export const sendWelcomeMail = async (to, name) => {
   }
 };
 
-// ================= ORDER CONFIRMATION =================
 export const sendOrderConfirmationMail = async (to, order) => {
   try {
     await resend.emails.send({
@@ -123,7 +120,6 @@ export const sendOrderConfirmationMail = async (to, order) => {
   }
 };
 
-// ================= PAYMENT SUCCESS =================
 export const sendPaymentSuccessMail = async (to, order, transactionId) => {
   try {
     await resend.emails.send({
