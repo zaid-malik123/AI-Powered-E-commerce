@@ -10,7 +10,7 @@ import { SystemMessage } from "@langchain/core/messages";
 const searchProductsTool = tool(
   async ({ query }) => {
     const response = await axios.get(
-      `http://localhost:3000/api/product/filter?q=${query}`,
+      `https://outfit-zfpx.onrender.com/api/product/filter?q=${query}`,
     );
 
     return JSON.stringify(response.data);
@@ -28,7 +28,7 @@ const searchProductsTool = tool(
 const searchBestSellingProduct = tool(
   async () => {
     const response = await axios.get(
-      `http://localhost:3000/api/product/best`
+      `https://outfit-zfpx.onrender.com/api/product/best`
     );
     return JSON.stringify(response.data);
   },
@@ -139,7 +139,7 @@ Do not add descriptions or extra text.
 const addToCartTool = tool(
   async ({ productId, quantity = 1, token }) => {
     const response = await axios.post(
-      `http://localhost:3000/api/cart/add`,
+      `https://outfit-zfpx.onrender.com/api/cart/add`,
       {
         productId,
         quantity,
