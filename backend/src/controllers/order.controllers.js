@@ -7,6 +7,8 @@ export const createOrder = async (req, res) => {
   try {
     const userId = req.user._id;
 
+    console.log("THIS IS THE REQ BODY :- ", req.body)
+
     const user = await User.findById(userId)
 
     const { items, address, paymentMethod, totalAmount } = req.body;
@@ -29,6 +31,9 @@ export const createOrder = async (req, res) => {
       address,
     });
 
+    console.log("THIS IS THE ORDER :- ", order)
+
+
     await Promise.all(
       order.items.map((item) =>
         Product.findByIdAndUpdate(item.product, {
@@ -38,6 +43,8 @@ export const createOrder = async (req, res) => {
     );
 
     sendOrderConfirmationMail(user.email, order)
+
+    console.log("send mail done")
 
     return res.status(201).json({
       success: true,
