@@ -23,7 +23,7 @@ const useProducts = (params) => {
         if (params.limit) query.append("limit", params.limit);
 
         const response = await axios.get(
-          `http://localhost:3000/api/product/filter/?${query.toString()}`,
+          `${import.meta.env.VITE_BASE_URL}/api/product/filter/?${query.toString()}`,
           { withCredentials: true },
         );
 

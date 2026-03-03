@@ -29,7 +29,7 @@ const App = () => {
 
    useEffect(() => {
     if (user) {
-      const socket_io = io(`http://localhost:3000`, {
+      const socket_io = io(`https://outfit-zfpx.onrender.com`, {
         withCredentials: true
       });
 

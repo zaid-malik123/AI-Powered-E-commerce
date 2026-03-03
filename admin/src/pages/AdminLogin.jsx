@@ -16,7 +16,7 @@ const AdminLogin = () => {
     try {
       // you can replace with real admin login endpoint
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL || "http://localhost:3000"}/api/admin/login`,
+        `${import.meta.env.VITE_BASE_URL}/api/admin/login`,
         { email, password },
         { withCredentials: true }
       );
