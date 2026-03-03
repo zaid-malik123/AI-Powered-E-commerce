@@ -4,8 +4,8 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
 import useProduct from "../hooks/useProduct";
 import SmartSearch from "../components/SmartSearch";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { RxCross1 } from "react-icons/rx";
 
 const Collection = () => {
   const navigate = useNavigate();
@@ -46,22 +46,32 @@ const Collection = () => {
   return (
     <div className="w-full min-h-screen mt-2 flex flex-col px-4 md:px-10">
       <div className="flex flex-col gap-4 mb-5">
-        {isSearchOpen && (
-          <SmartSearch onSearchChange={(value) => setSearchQuery(value)} />
-        )}
-
-        <div className="flex items-center gap-3">
-          <span className="text-2xl text-gray-600">
-            {searchQuery ? "Search Results" : "All Collections"}
-          </span>
-          <div className="w-12 h-0.5 bg-black"></div>
+        <div className="flex flex-col gap-4 mb-5">
+          {isSearchOpen && (
+            <div className="flex items-center gap-2">
+              <SmartSearch onSearchChange={(value) => setSearchQuery(value)} />
+              <RxCross1
+                size={24}
+                className="cursor-pointer text-gray-500 hover:text-gray-700"
+                onClick={() => {
+                  setSearchQuery("");
+                  const params = new URLSearchParams(location.search);
+                  params.delete("search");
+                  const newSearch = params.toString();
+                  navigate(
+                    newSearch ? `/collection?${newSearch}` : "/collection",
+                  );
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-10">
         {/* FILTER SECTION */}
         <div className="flex flex-col gap-5 w-full md:w-65">
           <div className="flex items-center gap-3">
-            <h2 className="font-semibold text-2xl text-gray-700">Filters</h2>
+            <h2 className="font-semibold text-2xl text-gray-700">FILTERS</h2>
 
             <button
               onClick={() => setIsMobileFilterOpen((prev) => !prev)}
@@ -122,6 +132,12 @@ const Collection = () => {
 
         {/* PRODUCTS SECTION */}
         <div className="flex-1">
+          <div className="flex items-center gap-3 mb-5">
+            <span className="text-2xl text-gray-800">
+              {searchQuery ? "Search Results" : "ALL COLLECTIONS"}
+            </span>
+            <div className="w-12 h-0.5 bg-black"></div>
+          </div>
           {loading && (
             <div className="text-center py-10">
               <p className="text-gray-500">Loading products...</p>

@@ -11,10 +11,7 @@ const SmartSearch = ({ onSearchChange }) => {
     onSearchChange(value); 
   };
 
-  const clearSearch = () => {
-    setSearchQuery("");
-    onSearchChange("");
-  };
+
 
   return (
     <div className="relative w-[95%] md:w-[70%] mx-auto">
@@ -27,11 +24,7 @@ const SmartSearch = ({ onSearchChange }) => {
           placeholder="Search products..."
           className="flex-1 outline-none text-gray-700"
         />
-        {searchQuery && (
-          <button onClick={clearSearch}>
-            <FiX size={18} />
-          </button>
-        )}
+  
         <HiSparkles className="text-blue-500" size={18} />
       </div>
     </div>

@@ -159,7 +159,7 @@ const Cart = () => {
                   {/* Product Image */}
                   <div className="w-24 h-24 shrink-0">
                     <img
-                      src={item.product?.image || "placeholder.png"}
+                      src={item.product?.image[0] || "placeholder.png"}
                       alt={item.product?.name}
                       className="w-full h-full object-cover rounded-md cursor-pointer"
                       onClick={() => navigate(`/product/${item.productId}`)}

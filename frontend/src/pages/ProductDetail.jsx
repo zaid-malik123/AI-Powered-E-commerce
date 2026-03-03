@@ -15,6 +15,7 @@ const ProductDetail = () => {
   const [cartMessage, setCartMessage] = useState("");
   const [mainImage, setMainImage] = useState("");
   const [relatedProduct, setRelatedProduct] = useState([]);
+  const [selectSize, setSelectSize] = useState("");
 
   const { user } = useSelector((state) => state.userSlice);
   const { addToCart } = useCart();
@@ -140,8 +141,14 @@ const ProductDetail = () => {
             <div className="flex gap-3">
               {product.sizes?.map((size) => (
                 <button
+                  onClick={() => setSelectSize(size)}
                   key={size}
-                  className="border px-5 py-2 hover:bg-black hover:text-white transition"
+                  className={`border px-5 py-2 transition 
+        ${
+          selectSize === size
+            ? "bg-black text-white"
+            : "hover:bg-black hover:text-white"
+        }`}
                 >
                   {size}
                 </button>

@@ -54,7 +54,7 @@ const App = () => {
       {!isAdminRoute && <Nav />}
       <AppRoutes />
       {!isAdminRoute && <Footer />}
-      {!isAdminRoute && <AIChat />}
+      {user && <AIChat />}
     </div>
   );
 };

@@ -148,18 +148,18 @@ const Nav = () => {
             className="flex items-center gap-2 px-5 py-4 border-b border-gray-400 cursor-pointer"
           >
             <IoChevronBack size={20} />
-            <span className="text-md font-medium">Back</span>
+            <span className="text-md font-medium">BACK</span>
           </div>
 
           {/* Menu Items */}
           <div className="flex flex-col">
             {[
-              { name: "Home", path: "/" },
-              { name: "Collection", path: "/collection" },
-              { name: "About", path: "/about" },
-              { name: "Contact", path: "/contact" },
+              { name: "HOME", path: "/" },
+              { name: "COLLECTION", path: "/collection" },
+              { name: "ABOUT", path: "/about" },
+              { name: "CONTACT", path: "/contact" },
               {
-                name: "Admin Panel",
+                name: "ADMIN PANEL",
                 path: "http://localhost:5174/admin/login",
                 external: true,
               },
@@ -230,7 +230,7 @@ const Nav = () => {
             ) : (
               <div
                 onClick={logoutHandler}
-                className="text-red-600 font-semibold ml-2 hidden md:block cursor-pointer"
+                className="text-red-600 font-semibold ml-2 cursor-pointer"
               >
                 Log Out
               </div>
