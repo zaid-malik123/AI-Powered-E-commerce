@@ -15,7 +15,7 @@ const AdminNav = () => {
         withCredentials: true
       })
 
-      navigate("/admin/login")
+      navigate("/login")
       
 
     } catch (error) {
