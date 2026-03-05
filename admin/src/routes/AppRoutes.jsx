@@ -9,9 +9,9 @@ const AppRoutes = () => {
 
         <Routes>
 
-            <Route path="/admin/login" element={<AdminLogin/>}></Route>
+            <Route path="/login" element={<AdminLogin/>}></Route>
 
-            <Route path="/admin/dashboard" element={<AdminDashBoard/>}></Route>
+            <Route path="/" element={<AdminDashBoard/>}></Route>
 
         </Routes>
     </div>
