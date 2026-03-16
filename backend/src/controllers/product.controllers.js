@@ -1,16 +1,21 @@
 import Product from "../models/product.model.js";
 import { uploadImage } from "../services/imageKit.service.js";
+import { generateVector } from "../config/createVector.js";
+import { index } from "../services/pincone.service.js";
 
 export const createProductController = async (req, res) => {
   try {
-    const { name, description, category, price, sizes, subCategory } = req.body;
+    let { name, description, category, price, sizes, subCategory } = req.body;
+
+    if (typeof sizes === "string") {
+      sizes = JSON.parse(sizes);
+    }
 
     const imageUrls = req.files?.length
       ? (await Promise.all(req.files.map((file) => uploadImage(file)))).map(
           (img) => img.url,
         )
       : [];
-
 
     const product = await Product.create({
       name,
@@ -21,6 +26,32 @@ export const createProductController = async (req, res) => {
       sizes,
       image: imageUrls,
     });
+    const text = `
+    Product: ${product.name}
+    Category: ${product.category}
+    Subcategory: ${product.subCategory}
+    Description: ${product.description}
+    `;
+
+    const vectors = await generateVector(text);
+  
+    const record = [
+      {
+        id: product._id.toString(),
+        values: vectors,
+        metadata: {
+          name: product.name,
+          category: product.category,
+          subCategory: product.subCategory,
+          description: product.description,
+        },
+      },
+    ];
+    await index.upsert({
+      records: record,
+    });
+
+    console.log("PINECONE DATA SAVED DONE")
 
     return res.status(201).json({
       success: true,
@@ -197,7 +228,7 @@ export const getRelatedProducts = async (req, res) => {
     }
 
     const relatedProducts = await Product.find({
-      _id: { $ne: id }, 
+      _id: { $ne: id },
       category: product.category,
       subCategory: product.subCategory,
     }).limit(5);
@@ -214,3 +245,32 @@ export const getRelatedProducts = async (req, res) => {
     });
   }
 };
+
+// export const testPinecone = async (req, res) => {
+//   try {
+
+//     const vector = Array.from({ length: 768 }, () => Math.random());
+
+//     const record = [
+//       {
+//         id: "12345",
+//         values: vector,
+//         metadata: { name: "test product" }
+//       }
+//     ]
+
+//     const response = await index.upsert({
+//       records: record
+//     });
+
+//     console.log(response);
+
+//     res.json({
+//       success: true,
+//       response
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };

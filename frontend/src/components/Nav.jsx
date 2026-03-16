@@ -61,7 +61,7 @@ const Nav = () => {
 
         <button
           onClick={() =>
-            window.open("https://outfit-ta1g.onrender.com/login", "_blank")
+            window.open(`${import.meta.env.VITE_ADMIN_URL}/login`, "_blank")
           }
           className="px-5 py-1 border border-gray-100 rounded-2xl text-sm hover:bg-gray-200 text-gray-700"
         >
@@ -160,7 +160,7 @@ const Nav = () => {
               { name: "CONTACT", path: "/contact" },
               {
                 name: "ADMIN PANEL",
-                path: "https://e-commerce-1-67wh.onrender.com/login",
+                path: `${import.meta.env.VITE_ADMIN_URL}/login`,
                 external: true,
               },
             ].map((item, index) => {

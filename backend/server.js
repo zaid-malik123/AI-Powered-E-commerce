@@ -9,6 +9,7 @@ config()
 const port = process.env.PORT;
 connectDb()
 
+
 const server = http.createServer(app);
 initSocket(server);
 

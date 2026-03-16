@@ -27,6 +27,8 @@ router.post(
 	createProductController
 );
 
+// router.get("/test-pinecone", testPinecone);
+
 router.get("/all", getAllProducts)
 
 router.get("/filter", getProducts)
@@ -40,5 +42,6 @@ router.get("/related/:id", getRelatedProducts)
 router.get("/:id", getSingleProduct);
 
 router.delete("/delete/:id", isAuth, isAdmin, deleteProduct);
+
 
 export default router

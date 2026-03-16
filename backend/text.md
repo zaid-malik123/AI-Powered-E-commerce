@@ -1,4 +1,4 @@
-1️⃣ E-commerce ka High Level Flow 
+<!-- 1️⃣ E-commerce ka High Level Flow 
 
 User Flow
 
@@ -293,4 +293,31 @@ Step-by-Step:
 
 
 
+ -->
 
+Admin creates product
+        ↓
+Product MongoDB me save
+        ↓
+Product text prepare
+(name + category + description)
+        ↓
+Embedding generate
+(Gemini/OpenAI)
+        ↓
+Vector Pinecone me store
+(with productId) 
+
+
+
+User product page open karta hai
+        ↓
+Current product ka vector lo
+        ↓
+Pinecone similarity search
+        ↓
+Top similar product IDs
+        ↓
+MongoDB me un IDs se products fetch karo
+        ↓
+Frontend ko complete product data bhejo

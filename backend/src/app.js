@@ -13,7 +13,7 @@ import PaymentRoutes from "./routes/payment.routes.js"
 const app = express()
 
 app.use(cors({
-  origin: ["https://outfit-ta1g.onrender.com", "https://e-commerce-1-67wh.onrender.com"],
+  origin: ["https://outfit-ta1g.onrender.com", "https://e-commerce-1-67wh.onrender.com", "http://localhost:5174", "http://localhost:5173"],
   credentials: true, 
 }));
 app.use(express.json())
@@ -21,8 +21,9 @@ app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 
 app.get("/" , (req, res) => {
-  res.send("HIII 😅")
+  res.send("HIII GYUS 😅")
 })
+
 
 app.use("/api/user", UserRoutes)
 app.use("/api/product", ProductRoutes)
@@ -30,6 +31,7 @@ app.use("/api/cart", CartRoutes)
 app.use("/api/order", OrderRoutes)
 app.use("/api/admin", AdminRoutes)
 app.use("/api/payment", PaymentRoutes)
+
 
 
 export default app;

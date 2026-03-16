@@ -29,7 +29,7 @@ const App = () => {
 
    useEffect(() => {
     if (user) {
-      const socket_io = io(`https://outfit-zfpx.onrender.com`, {
+      const socket_io = io(`${import.meta.env.VITE_BASE_URL}`, {
         withCredentials: true
       });
 
