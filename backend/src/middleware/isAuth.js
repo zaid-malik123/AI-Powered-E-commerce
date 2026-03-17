@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
+import logger from "../config/winston.js";
 
 export const isAuth = async (req, res, next) => {
   try {
@@ -30,6 +31,7 @@ export const isAuth = async (req, res, next) => {
     req.user = user; // ✅ attach user
     next();
   } catch (error) {
+    logger.error("AUTH MIDDLEWARE ERROR ", error.message)
     console.log("AUTH ERROR:", error.message);
     return res.status(401).json({ message: "Invalid token" });
   }

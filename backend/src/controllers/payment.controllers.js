@@ -4,6 +4,7 @@ import Order from "../models/order.model.js";
 import Razorpay from "razorpay";
 import { sendOrderConfirmationMail, sendPaymentSuccessMail } from "../services/mail.service.js";
 import User from "../models/user.model.js";
+import logger from "../config/winston.js";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -29,6 +30,7 @@ export const createRazorpayOrder = async (req, res) => {
       razorpayOrder,
     });
   } catch (error) {
+    logger.error(`Error in create razorpay Order: ${error.message}`);
     console.error("Razorpay Order Error:", error);
     res.status(500).json({
       success: false,
@@ -100,6 +102,7 @@ export const verifyAndSavePayment = async (req, res) => {
       order,
     });
   } catch (error) {
+    logger.error(`Error in Verify payment error: ${error.message}`);
     console.error("Payment Verify Error:", error);
     res.status(500).json({
       success: false,

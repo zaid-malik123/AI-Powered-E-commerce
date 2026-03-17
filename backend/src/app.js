@@ -10,6 +10,7 @@ import OrderRoutes from "./routes/order.routes.js"
 import AdminRoutes from "./routes/admin.routes.js"
 import PaymentRoutes from "./routes/payment.routes.js"
 import {globalLimiter, strictLimiter, normalLimiter} from "./middleware/rateLimiter.middleware.js"
+// import logger from "./config/winston.js"
 
 const app = express()
 
@@ -26,6 +27,14 @@ app.get("/" , (req, res) => {
   res.send("HIII GYUS 😅")
 })
 
+// app.get("/test-logger", (req, res) => {
+//   try {
+//     throw new Error("This is a test error for logger!");
+//   } catch (err) {
+//     logger.error(`Test logger caught error: ${err.message}`);
+//     res.status(500).send("Check your logs folder!");
+//   }
+// });
 
 app.use("/api/user", strictLimiter,UserRoutes)
 app.use("/api/product", normalLimiter,ProductRoutes)

@@ -1,3 +1,4 @@
+import logger from "../config/winston.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 import User from "../models/user.model.js";
@@ -49,6 +50,7 @@ export const createOrder = async (req, res) => {
       order,
     });
   } catch (error) {
+    logger.error(`Error in create order : ${error.message}`);
     console.error("Create Order Error:", error);
     return res.status(500).json({
       success: false,
@@ -77,6 +79,7 @@ export const getUserOrders = async (req, res) => {
       orders,
     });
   } catch (error) {
+    logger.error(`Error in get user order : ${error.message}`);
     console.error("Get User Orders Error:", error);
     return res.status(500).json({
       success: false,
@@ -94,6 +97,7 @@ export const getAllOrders = async (req, res) => {
       orders,
     });
   } catch (error) {
+    logger.error(`Error in get all user orders: ${error.message}`);
     console.error("Get User Orders Error:", error);
     return res.status(500).json({
       success: false,
@@ -127,6 +131,7 @@ export const updateOrderStatus = async (req, res) => {
       order,
     });
   } catch (error) {
+    logger.error(`Error in update order status : ${error.message}`);
     console.error("Update Order Status Error:", error);
     return res.status(500).json({
       success: false,

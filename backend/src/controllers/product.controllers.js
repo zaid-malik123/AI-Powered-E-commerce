@@ -2,6 +2,7 @@ import Product from "../models/product.model.js";
 import { uploadImage } from "../services/imageKit.service.js";
 import { generateVector } from "../config/createVector.js";
 import { index } from "../services/pincone.service.js";
+import logger from "../config/winston.js";
 
 export const createProductController = async (req, res) => {
   try {
@@ -58,6 +59,7 @@ export const createProductController = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    logger.error(`Error in createProducts: ${error.message}`);
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -71,6 +73,7 @@ export const getAllProducts = async (req, res) => {
 
     return res.status(200).json(products);
   } catch (error) {
+    logger.error(`Error in getAllProducts: ${error.message}`);
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -134,6 +137,7 @@ export const getProducts = async (req, res) => {
 
   } catch (error) {
     console.log(error);
+    logger.error(`Error in getProducts: ${error.message}`);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -161,6 +165,7 @@ export const getSingleProduct = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    logger.error(`Error in getSingleProduct: ${error.message}`);
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -189,6 +194,7 @@ export const deleteProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Delete Product Error:", error);
+    logger.error(`Error in deleteProduct: ${error.message}`);
     return res.status(500).json({
       success: false,
       message: "Something went wrong while deleting product",
@@ -205,6 +211,7 @@ export const latestCollection = async (req, res) => {
       products,
     });
   } catch (error) {
+    logger.error(`Error in latestProductCollection: ${error.message}`);
     console.error("Latest Collection Error:", error);
     return res.status(500).json({
       success: false,
@@ -222,6 +229,7 @@ export const getBestSellers = async (req, res) => {
       products: bestSellers,
     });
   } catch (error) {
+    logger.error(`Error in bestSellingProducts: ${error.message}`);
     res.status(500).json({
       success: false,
       message: "Error fetching best sellers",
@@ -288,6 +296,7 @@ export const getRelatedProducts = async (req, res) => {
     //   relatedProducts,
     // });
   } catch (error) {
+    logger.error(`Error in getRelatedProducts: ${error.message}`);
     console.log(error);
     return res.status(500).json({
       success: false,

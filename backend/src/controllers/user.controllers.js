@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import { genToken } from "../config/genToken.js";
 import { sendOtpMail, sendWelcomeMail } from "../services/mail.service.js";
+import logger from "../config/winston.js";
 
 export const signup = async (req, res) => {
   try {
@@ -47,6 +48,7 @@ export const signup = async (req, res) => {
 
     return res.status(201).json(newUser);
   } catch (error) {
+    logger.error(`Error in User SingUp: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 };
@@ -86,6 +88,7 @@ export const login = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (error) {
+    logger.error(`Error in User login: ${error.message}`);
     console.error("Login error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -96,6 +99,7 @@ export const logout = async (req, res) => {
     res.clearCookie("token");
     return res.status(200).json({ message: "Logout successfully" });
   } catch (error) {
+    logger.error(`Error in User logout: ${error.message}`);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -111,6 +115,7 @@ export const currUser = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (error) {
+    logger.error(`Error in currentUser SingUp: ${error.message}`);
     console.log(error);
   }
 };
@@ -139,6 +144,7 @@ export const sendOtp = async (req, res) => {
 
     res.status(200).json({ message: "OTP send successfully 👍" });
   } catch (error) {
+    logger.error(`Error in User to send otp: ${error.message}`);
     console.log(error);
   }
 };
@@ -160,6 +166,7 @@ export const verifyOtp = async (req, res, next) => {
 
     res.status(200).json({ message: "OTP verify successfully 👍" });
   } catch (error) {
+    logger.error(`Error in User verify otp: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 };
@@ -185,6 +192,7 @@ export const resetPassword = async (req, res, next) => {
 
     res.status(200).json({ message: "password reset successfully" });
   } catch (error) {
+    logger.error(`Error in User Password reset: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 };

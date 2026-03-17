@@ -1,3 +1,4 @@
+import logger from "../config/winston.js";
 import Cart from "../models/cart.model.js";
 import Product from "../models/product.model.js";
 
@@ -52,6 +53,7 @@ export const addCartItem = async (req, res) => {
       cart,
     });
   } catch (error) {
+    logger.error(`Error in add cart item  : ${error.message}`);
     console.error(error);
     return res.status(500).json({
       success: false,
@@ -81,6 +83,7 @@ export const allCartItem = async (req, res) => {
       cart,
     });
   } catch (error) {
+    logger.error(`Error in all cart item  : ${error.message}`);
     console.error(error);
     return res.status(500).json({
       success: false,
@@ -146,6 +149,7 @@ export const updateCartItem = async (req, res) => {
       cart,
     });
   } catch (error) {
+    logger.error(`Error in update cart item  : ${error.message}`);
     console.error(error);
     return res.status(500).json({
       success: false,
@@ -188,6 +192,7 @@ export const removeItem = async (req, res) => {
     });
 
   } catch (error) {
+    logger.error(`Error in remove cart item  : ${error.message}`);
     console.error(error);
     return res.status(500).json({
       success: false,
@@ -220,6 +225,7 @@ export const removeAllCart = async (req, res) => {
     });
 
   } catch (error) {
+    logger.error(`Error in remove all cart item  : ${error.message}`);
     console.error(error);
     return res.status(500).json({
       success: false,
