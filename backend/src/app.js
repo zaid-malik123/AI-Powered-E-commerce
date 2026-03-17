@@ -9,6 +9,7 @@ import CartRoutes from "./routes/cart.routes.js"
 import OrderRoutes from "./routes/order.routes.js"
 import AdminRoutes from "./routes/admin.routes.js"
 import PaymentRoutes from "./routes/payment.routes.js"
+import {globalLimiter, strictLimiter, normalLimiter} from "./middleware/rateLimiter.middleware.js"
 
 const app = express()
 
@@ -19,18 +20,19 @@ app.use(cors({
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
+app.use(globalLimiter);
 
 app.get("/" , (req, res) => {
   res.send("HIII GYUS 😅")
 })
 
 
-app.use("/api/user", UserRoutes)
-app.use("/api/product", ProductRoutes)
-app.use("/api/cart", CartRoutes)
-app.use("/api/order", OrderRoutes)
-app.use("/api/admin", AdminRoutes)
-app.use("/api/payment", PaymentRoutes)
+app.use("/api/user", strictLimiter,UserRoutes)
+app.use("/api/product", normalLimiter,ProductRoutes)
+app.use("/api/cart", normalLimiter,CartRoutes)
+app.use("/api/order", normalLimiter,OrderRoutes)
+app.use("/api/admin", strictLimiter,AdminRoutes)
+app.use("/api/payment", strictLimiter,PaymentRoutes)
 
 
 

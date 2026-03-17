@@ -17,10 +17,8 @@ const searchProductsTool = tool(
         }
       );
 
-      return response.data.products
-        .slice(0, 5)
-        .map((p) => `${p.name} - ₹${p.price}`)
-        .join("\n");
+       return JSON.stringify(response.data);
+
 
     } catch (error) {
       return "Error fetching products";
@@ -145,6 +143,13 @@ Do not add descriptions or extra text.
   - Multiple products are equally relevant
   - The product requires critical customization (like shoe size)
 
+When you recommend a product from search results:
+- Always remember its productId.
+- If the user says "add it", "add this", or similar:
+  → Use the previously recommended productId
+  → Directly call add_to_cart tool
+
+Do NOT call search again if the product is already known.
 
 
 `;
@@ -197,9 +202,14 @@ const systemMessage = new SystemMessage(systemPrompt);
 const modelWithTools = model.bindTools(Object.values(toolByName));
 
 async function agentNode(state) {
+  // console.log("THIS IS THE STATE : ", state)
   const messagesWithSystem = [systemMessage, ...state.messages];
 
+  // console.log("THIS IS THE MESSAGE : ", messagesWithSystem)
+  
   const response = await modelWithTools.invoke(messagesWithSystem);
+
+  // console.log("THIS IS THA AI RESPONSE :- ", response)
 
   return {
     ...state,
@@ -215,7 +225,7 @@ async function agentNode(state) {
 
 const toolNode = async (state, config) => {
   const lastMessage = state.messages[state.messages.length - 1];
-
+  console.log("THIS IS MESSGAE " , lastMessage)
   if (!lastMessage.tool_calls?.length) {
     return state;
   }
