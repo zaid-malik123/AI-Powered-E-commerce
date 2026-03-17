@@ -34,7 +34,7 @@ export const createProductController = async (req, res) => {
     `;
 
     const vectors = await generateVector(text);
-  
+
     const record = [
       {
         id: product._id.toString(),
@@ -50,8 +50,6 @@ export const createProductController = async (req, res) => {
     await index.upsert({
       records: record,
     });
-
-    console.log("PINECONE DATA SAVED DONE")
 
     return res.status(201).json({
       success: true,
@@ -227,16 +225,51 @@ export const getRelatedProducts = async (req, res) => {
       });
     }
 
-    const relatedProducts = await Product.find({
-      _id: { $ne: id },
-      category: product.category,
-      subCategory: product.subCategory,
-    }).limit(5);
+    const text = `
+    Product: ${product.name}
+    Category: ${product.category}
+    Subcategory: ${product.subCategory}
+    Description: ${product.description}
+    `;
 
+    const createVector = await generateVector(text);
+
+    // console.log(createVector)
+
+    const result = await index.query({
+      vector: createVector,
+      topK: 5,
+      includeMetadata: false,
+    });
+
+    const ids = result.matches.map((item) => item.id);
+
+    const relatedProducts = await Product.find({
+      _id: { $in: ids, $ne: id },
+    });
+    const productMap = {};
+
+    relatedProducts.forEach((p) => {
+      productMap[p._id.toString()] = p;
+    });
+
+    const orderedProducts = ids
+      .map((id) => productMap[id])
+      .filter(Boolean);
     return res.status(200).json({
       success: true,
-      relatedProducts,
+      relatedProducts: orderedProducts,
     });
+    // const relatedProducts = await Product.find({
+    //   _id: { $ne: id },
+    //   category: product.category,
+    //   subCategory: product.subCategory,
+    // }).limit(5);
+
+    // return res.status(200).json({
+    //   success: true,
+    //   relatedProducts,
+    // });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
