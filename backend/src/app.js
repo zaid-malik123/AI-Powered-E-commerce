@@ -1,6 +1,7 @@
 import express from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import morgan from "morgan"
 
 //Routes
 import UserRoutes from "./routes/user.routes.js"
@@ -22,6 +23,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 app.use(globalLimiter);
+app.use(morgan("dev"))
 
 app.get("/" , (req, res) => {
   res.send("HIII GYUS 😅")
