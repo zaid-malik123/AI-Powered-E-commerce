@@ -8,27 +8,40 @@ import { AIMessage, ToolMessage } from "@langchain/core/messages";
 import { SystemMessage } from "@langchain/core/messages";
 
 const searchProductsTool = tool(
-  async ({ query }) => {
-    const response = await axios.get(
-      `https://outfit-zfpx.onrender.com/api/product/filter?q=${query}`,
-    );
+  async ({ query, minPrice, maxPrice }) => {
+    try {
+      const response = await axios.get(
+        `${process.env.SERVER_URL}/api/product/filter`,
+        {
+          params: { q: query, minPrice, maxPrice },
+        }
+      );
 
-    return JSON.stringify(response.data);
+      return response.data.products
+        .slice(0, 5)
+        .map((p) => `${p.name} - ₹${p.price}`)
+        .join("\n");
+
+    } catch (error) {
+      return "Error fetching products";
+    }
   },
-
   {
     name: "search_products",
     description:
-      'Search for products based on a query. Input should be a JSON object with a \'query\' field. Example: { "query": "laptop" }',
+      "Search products with optional price filtering",
     schema: z.object({
-      query: z.string().describe("The search query for products"),
+      query: z.string(),
+      minPrice: z.number().optional(),
+      maxPrice: z.number().optional(),
     }),
-  },
+  }
 );
+
 const searchBestSellingProduct = tool(
   async () => {
     const response = await axios.get(
-      `https://outfit-zfpx.onrender.com/api/product/best`
+      `${process.env.SERVER_URL}/api/product/best`
     );
     return JSON.stringify(response.data);
   },
@@ -139,7 +152,7 @@ Do not add descriptions or extra text.
 const addToCartTool = tool(
   async ({ productId, quantity = 1, token }) => {
     const response = await axios.post(
-      `https://outfit-zfpx.onrender.com/api/cart/add`,
+      `${process.env.SERVER_URL}/api/cart/add`,
       {
         productId,
         quantity,

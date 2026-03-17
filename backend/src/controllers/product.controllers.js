@@ -80,23 +80,39 @@ export const getAllProducts = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   try {
-    const { category, subCategory, q, page = 1, limit = 30 } = req.query;
+    const { category, subCategory, q, page = 1, limit = 30, minPrice, maxPrice } = req.query;
 
     const filter = {};
 
+    // Category filter
     if (category) {
       filter.category = { $in: category.split(",") };
     }
 
+    // Subcategory filter
     if (subCategory) {
       filter.subCategory = { $in: subCategory.split(",") };
     }
 
+    // Search filter
     if (q) {
       filter.$or = [
         { name: { $regex: q, $options: "i" } },
         { description: { $regex: q, $options: "i" } },
       ];
+    }
+
+    // 💰 Price filter (IMPORTANT PART)
+    if (minPrice || maxPrice) {
+      filter.price = {};
+
+      if (minPrice) {
+        filter.price.$gte = Number(minPrice);
+      }
+
+      if (maxPrice) {
+        filter.price.$lte = Number(maxPrice);
+      }
     }
 
     const skip = (page - 1) * limit;
@@ -115,6 +131,7 @@ export const getProducts = async (req, res) => {
       totalPages: Math.ceil(total / limit),
       products,
     });
+
   } catch (error) {
     console.log(error);
     res.status(500).json({
