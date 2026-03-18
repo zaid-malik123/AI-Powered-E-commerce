@@ -7,7 +7,7 @@ jest.unstable_mockModule("../src/services/mail.service.js", () => ({
   sendPaymentSuccessMail: jest.fn(),
 }));
 
-const { sendWelcomeMail } = await import("../src/services/mail.service.js");
+const { sendWelcomeMail, sendOtpMail } = await import("../src/services/mail.service.js");
 const { default: app } = await import("../src/app.js");
 
 import request from "supertest";
@@ -16,6 +16,7 @@ import {
   clearDatabase,
   closeDatabase,
 } from "../testUtils/setupTestDb.helper.js";
+// import { sendOtpMail } from "../src/services/mail.service.js";
 
 beforeAll(async () => {
   await connect();
@@ -210,7 +211,7 @@ describe("POST /api/user/send-otp", () => {
       .send({ email: validUser.email });
 
     expect(res.statusCode).toBe(200);
-    // expect(res.body.message).toBe("OTP send successfully");
+    expect(res.body.message).toBe("OTP send successfully 👍");
   });
 
   it("should return error if user does not exist", async () => {
@@ -219,7 +220,7 @@ describe("POST /api/user/send-otp", () => {
       .send({ email: "nonexistent@gmail.com" });
 
     expect(res.statusCode).toBe(400);
-    // expect(res.body.message).toBe("Your account does not exist Please SignUp");
+    expect(res.body.message).toBe("user email not found",);
   });
 
   it("should return error if email is invalid", async () => {
@@ -229,6 +230,21 @@ describe("POST /api/user/send-otp", () => {
 
     expect(res.statusCode).toBe(400);
   });
+
+  it("should call sendOtpMail", async () => {
+  await request(app).post("/api/user/signup").send(validUser);
+
+  await request(app)
+    .post("/api/user/send-otp")
+    .send({ email: validUser.email });
+
+  expect(sendOtpMail).toHaveBeenCalled();
+
+  expect(sendOtpMail).toHaveBeenCalledWith(
+    validUser.email,
+    expect.any(String)
+  );
+});
 });
 
 describe("POST /api/user/verify-otp", () => {
