@@ -177,7 +177,19 @@ export const resetPassword = async (req, res, next) => {
 
     const user = await User.findOne({ email });
 
-    if (!user || !user.isOtpVerified) {
+    if(!user) {
+      return res.status(400).json({
+        message: "Your account does not exist Please SignUp"
+      })
+    }
+
+    if(password.length <= 6) {
+      return res.status(400).json({
+        message: "password must be at least 6 characters"
+      })
+    }
+
+    if (!user.isOtpVerified) {
       return res.status(400).json({ message: "Otp verification required" });
     }
 
