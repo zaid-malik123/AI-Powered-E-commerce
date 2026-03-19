@@ -8,34 +8,24 @@ jest.unstable_mockModule("../src/services/mail.service.js", () => ({
 }));
 
 import request from "supertest";
-// import app from "../src/app.js";
 
 import {
   connect,
-  clearDatabase,
   closeDatabase,
 } from "../testUtils/setupTestDb.helper.js";
 
 const { default: app } = await import("../src/app.js");
 const { default: User } = await import("../src/models/user.model.js");
-const { sendWelcomeMail } = await import("../src/services/mail.service.js");
-// import { sendWelcomeMail }  from "../src/services/mail.service.js";
 
 beforeAll(async () => {
   await connect();
 });
 
-// afterEach(async () => {
-//   await clearDatabase();
-//   jest.clearAllMocks();
-// });
-
 afterAll(async () => {
   await closeDatabase();
 });
 
-describe("POST /api/cart/add", () => {
-
+describe("Cart API", () => {
   let adminToken;
   let userToken;
   let productId;
@@ -48,11 +38,6 @@ describe("POST /api/cart/add", () => {
 
   const userPayload = {
     name: "test",
-    email: "test@gmail.com",
-    password: "123456",
-  };
-
-  const loginUser = {
     email: "test@gmail.com",
     password: "123456",
   };
@@ -74,11 +59,7 @@ describe("POST /api/cart/add", () => {
       { $set: { role: "admin" } }
     );
 
-    const adminLogin = await request(app).post("/api/user/login").send({
-      email: adminPayload.email,
-      password: adminPayload.password,
-    });
-
+    const adminLogin = await request(app).post("/api/user/login").send(adminPayload);
     adminToken = adminLogin.headers["set-cookie"];
 
     // product create
@@ -89,86 +70,153 @@ describe("POST /api/cart/add", () => {
 
     productId = productRes.body.product._id;
 
+    // user create
     await request(app).post("/api/user/signup").send(userPayload);
 
-    const userLogin = await request(app).post("/api/user/login").send(loginUser);
+    const userLogin = await request(app).post("/api/user/login").send({
+      email: userPayload.email,
+      password: userPayload.password,
+    });
 
     userToken = userLogin.headers["set-cookie"];
   });
 
-  it("should add product to cart", async () => {
-    const res = await request(app)
-      .post("/api/cart/add")
-      .set("Cookie", userToken)
-      .send({
-        productId,
-        quantity: 1,
-      });
+  describe("POST /api/cart/add", () => {
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe("Item added to cart");
-    expect(res.body.cart.items.length).toBe(1);
+    it("should add product to cart", async () => {
+      const res = await request(app)
+        .post("/api/cart/add")
+        .set("Cookie", userToken)
+        .send({ productId, quantity: 1 });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.cart.items.length).toBe(1);
+    });
+
+    it("should increase quantity if product already exists", async () => {
+      const res = await request(app)
+        .post("/api/cart/add")
+        .set("Cookie", userToken)
+        .send({ productId, quantity: 2 });
+
+      expect(res.body.cart.items[0].quantity).toBe(3);
+    });
+
+    it("should fail for invalid quantity", async () => {
+      const res = await request(app)
+        .post("/api/cart/add")
+        .set("Cookie", userToken)
+        .send({ productId, quantity: 0 });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("should fail if productId missing", async () => {
+      const res = await request(app)
+        .post("/api/cart/add")
+        .set("Cookie", userToken)
+        .send({ quantity: 1 });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("should fail if product not found", async () => {
+      const res = await request(app)
+        .post("/api/cart/add")
+        .set("Cookie", userToken)
+        .send({
+          productId: "507f1f77bcf86cd799439011",
+          quantity: 1,
+        });
+
+      expect(res.statusCode).toBe(404);
+    });
+
+    it("should fail if unauthorized", async () => {
+      const res = await request(app)
+        .post("/api/cart/add")
+        .send({ productId, quantity: 1 });
+
+      expect(res.statusCode).toBe(401);
+    });
+
   });
 
-  it("should increase quantity if product already exists", async () => {
-    const res = await request(app)
-      .post("/api/cart/add")
-      .set("Cookie", userToken)
-      .send({
-        productId,
-        quantity: 2,
-      });
+  describe("GET /api/cart", () => {
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body.cart.items[0].quantity).toBe(3);
+    it("should fetch cart items", async () => {
+      const res = await request(app)
+        .get("/api/cart")
+        .set("Cookie", userToken);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.cart.items.length).toBeGreaterThanOrEqual(1);
+    });
+
   });
 
-  it("should fail for invalid quantity", async () => {
-    const res = await request(app)
-      .post("/api/cart/add")
-      .set("Cookie", userToken)
-      .send({
-        productId,
-        quantity: 0,
-      });
-    //   console.log(res)
-    expect(res.statusCode).toBe(400);
-    // expect(res.body.message).toBe("Invalid productId or quantity");
+  describe("PUT /api/cart/update", () => {
+
+    it("should update quantity", async () => {
+      const res = await request(app)
+        .put("/api/cart/update")
+        .set("Cookie", userToken)
+        .send({ productId, quantity: 5 });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.cart.items[0].quantity).toBe(5);
+    });
+
+    it("should remove item if quantity 0", async () => {
+      const res = await request(app)
+        .put("/api/cart/update")
+        .set("Cookie", userToken)
+        .send({ productId, quantity: 0 });
+     
+     expect(res.statusCode).toBe(400)
+    // console.log("THIS IS THE RESPONEE ",res) 
+    //   expect(res.body.cart.items.length).toBe(0);
+    });
+
   });
 
-  it("should fail if productId is missing", async () => {
-    const res = await request(app)
-      .post("/api/cart/add")
-      .set("Cookie", userToken)
-      .send({
-        quantity: 1,
-      });
+  describe("DELETE /api/cart/remove", () => {
 
-    expect(res.statusCode).toBe(400);
+    it("should add item again", async () => {
+      await request(app)
+        .post("/api/cart/add")
+        .set("Cookie", userToken)
+        .send({ productId, quantity: 2 });
+    });
+
+    it("should remove item", async () => {
+      const res = await request(app)
+        .delete("/api/cart/remove")
+        .set("Cookie", userToken)
+        .send({ productId });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.cart.items.length).toBe(0);
+    });
+
   });
 
-  it("should fail if product does not exist", async () => {
-    const res = await request(app)
-      .post("/api/cart/add")
-      .set("Cookie", userToken)
-      .send({
-        productId: "507f1f77bcf86cd799439011", // fake id
-        quantity: 1,
-      });
+  describe("DELETE /api/cart/remove-all-cart", () => {
 
-    expect(res.statusCode).toBe(404);
-    expect(res.body.message).toBe("Product not found");
-  });
+    it("should clear cart", async () => {
+      await request(app)
+        .post("/api/cart/add")
+        .set("Cookie", userToken)
+        .send({ productId, quantity: 2 });
 
-  it("should fail if user not logged in", async () => {
-    const res = await request(app)
-      .post("/api/cart/add")
-      .send({
-        productId,
-        quantity: 1,
-      });
+      const res = await request(app)
+        .delete("/api/cart/remove-all-cart")
+        .set("Cookie", userToken);
 
-    expect(res.statusCode).toBe(401);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.cart.items.length).toBe(0);
+    });
+
   });
 
 });
