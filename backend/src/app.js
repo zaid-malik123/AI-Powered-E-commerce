@@ -3,6 +3,9 @@ import cookieParser from "cookie-parser"
 import cors from "cors"
 // import morgan from "morgan"
 import morganMiddleware from "./config/morgan.js"
+import helmet from "helmet"
+import {globalLimiter, strictLimiter, normalLimiter} from "./middleware/rateLimiter.middleware.js"
+import logger from "./config/winston.js"
 
 //Routes
 import UserRoutes from "./routes/user.routes.js"
@@ -11,8 +14,7 @@ import CartRoutes from "./routes/cart.routes.js"
 import OrderRoutes from "./routes/order.routes.js"
 import AdminRoutes from "./routes/admin.routes.js"
 import PaymentRoutes from "./routes/payment.routes.js"
-import {globalLimiter, strictLimiter, normalLimiter} from "./middleware/rateLimiter.middleware.js"
-import logger from "./config/winston.js"
+
 
 const app = express()
 
@@ -25,6 +27,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 app.use(globalLimiter);
 app.use(morganMiddleware)
+app.use(helmet())
 // app.use(morgan("dev"))
 
 app.get("/" , (req, res) => {
