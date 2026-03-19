@@ -1,8 +1,5 @@
-import { describe, expect, jest as jestGlobals } from "@jest/globals";
-
-const jest = globalThis.jest ?? jestGlobals;
-
-process.env.JWT_SECRET = process.env.JWT_SECRET || "testsecret";
+import { describe, expect, it, beforeAll, afterAll, afterEach } from "@jest/globals";
+import { jest } from "@jest/globals";
 
 jest.unstable_mockModule("../src/services/mail.service.js", () => ({
   sendWelcomeMail: jest.fn(),
@@ -11,11 +8,9 @@ jest.unstable_mockModule("../src/services/mail.service.js", () => ({
   sendPaymentSuccessMail: jest.fn(),
 }));
 
+const mailService = await import("../src/services/mail.service.js");
+
 const { default: app } = await import("../src/app.js");
-const { default: User } = await import("../src/models/user.model.js");
-const { default: Product } = await import("../src/models/product.model.js");
-const { default: Order } = await import("../src/models/order.model.js");
-const { genToken } = await import("../src/config/genToken.js");
 
 import request from "supertest";
 import {
@@ -24,6 +19,13 @@ import {
   closeDatabase,
 } from "../testUtils/setupTestDb.helper.js";
 
+process.env.JWT_SECRET = process.env.JWT_SECRET || "testsecret";
+
+const { default: User } = await import("../src/models/user.model.js");
+const { default: Product } = await import("../src/models/product.model.js");
+const { genToken } = await import("../src/config/genToken.js");
+// import { sendOrderConfirmationMail } from "../src/services/mail.service.js";
+// const mailService = await import("../src/services/mail.service.js");
 beforeAll(async () => {
   await connect();
 });
@@ -83,6 +85,7 @@ describe("Order API", () => {
       .set("Cookie", cookie)
       .send({ items, address: "123 Test St", totalAmount: 100 });
 
+    expect(mailService.sendOrderConfirmationMail).toHaveBeenCalled(); 
     expect(res.statusCode).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.order.items.length).toBe(1);
@@ -99,7 +102,6 @@ describe("Order API", () => {
       .set("Cookie", cookie)
       .send({ items: [], address: "addr", totalAmount: 0 });
 
-    console.log("THS IS THE RES " ,res)  
     expect(res.statusCode).toBe(400);
     // expect(res.body.message).toBe("Cart is empty");
   });

@@ -40,7 +40,7 @@ export const createOrder = async (req, res) => {
       ),
     );
 
-    sendOrderConfirmationMail(user.email, order)
+    await sendOrderConfirmationMail(user.email, order)
 
     console.log("send mail done")
 
