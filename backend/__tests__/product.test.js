@@ -29,9 +29,9 @@ const { index } = await import("../src/services/pincone.service.js");
 import request from "supertest";
 import {
   connect,
-  clearDatabase,
   closeDatabase,
-} from "../testUtils/setupTestDb.helper.js";
+  clearDatabase
+} from "../src/testUtils/setupTestDb.helper.js";
 
 beforeAll(async () => {
   await connect();

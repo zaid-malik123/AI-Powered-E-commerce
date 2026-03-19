@@ -39,10 +39,9 @@ export const createOrder = async (req, res) => {
         }),
       ),
     );
+    
 
     await sendOrderConfirmationMail(user.email, order)
-
-    console.log("send mail done")
 
     return res.status(201).json({
       success: true,

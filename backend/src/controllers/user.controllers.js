@@ -43,6 +43,7 @@ export const signup = async (req, res) => {
       sameSite: "none",
       secure: true,
     });
+    
 
     await sendWelcomeMail(newUser.email, newUser.name);
 

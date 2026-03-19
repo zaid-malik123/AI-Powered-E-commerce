@@ -13,9 +13,9 @@ const { default: app } = await import("../src/app.js");
 import request from "supertest";
 import {
   connect,
-  clearDatabase,
   closeDatabase,
-} from "../testUtils/setupTestDb.helper.js";
+  clearDatabase
+} from "../src/testUtils/setupTestDb.helper.js";
 // import { sendOtpMail } from "../src/services/mail.service.js";
 
 beforeAll(async () => {

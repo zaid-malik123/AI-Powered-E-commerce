@@ -34,7 +34,10 @@ const { default: app } = await import("../src/app.js");
 import request from "supertest";
 import crypto from "crypto";
 
-import { connect, closeDatabase } from "../testUtils/setupTestDb.helper.js";
+import {
+  connect,
+  closeDatabase,
+} from "../src/testUtils/setupTestDb.helper.js";
 
 let token;
 
@@ -48,7 +51,7 @@ beforeAll(async () => {
     email: "test@gmail.com",
     password: "123456",
   });
-
+  expect(mailModule.sendWelcomeMail).toHaveBeenCalled();
   const res = await request(app).post("/api/user/login").send({
     email: "test@gmail.com",
     password: "123456",

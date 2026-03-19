@@ -12,7 +12,10 @@ import request from "supertest";
 import {
   connect,
   closeDatabase,
-} from "../testUtils/setupTestDb.helper.js";
+} from "../src/testUtils/setupTestDb.helper.js";
+
+const mailService = await import("../src/services/mail.service.js");
+// import { sendWelcomeMail } from "../src/services/mail.service.js";
 
 const { default: app } = await import("../src/app.js");
 const { default: User } = await import("../src/models/user.model.js");
@@ -24,6 +27,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await closeDatabase();
 });
+
 
 describe("Cart API", () => {
   let adminToken;
@@ -58,7 +62,7 @@ describe("Cart API", () => {
       { email: adminPayload.email },
       { $set: { role: "admin" } }
     );
-
+    expect(mailService.sendWelcomeMail).toHaveBeenCalled();
     const adminLogin = await request(app).post("/api/user/login").send(adminPayload);
     adminToken = adminLogin.headers["set-cookie"];
 
@@ -72,7 +76,7 @@ describe("Cart API", () => {
 
     // user create
     await request(app).post("/api/user/signup").send(userPayload);
-
+    expect(mailService.sendWelcomeMail).toHaveBeenCalled();
     const userLogin = await request(app).post("/api/user/login").send({
       email: userPayload.email,
       password: userPayload.password,

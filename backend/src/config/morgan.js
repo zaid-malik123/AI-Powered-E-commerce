@@ -10,7 +10,7 @@ let morganMiddleware;
 
 if (process.env.NODE_ENV === "development") {
   morganMiddleware = morgan("dev"); 
-} else {
+} else if(process.env.NODE_ENV === "production") {
   const accessFileTransport = new DailyRotateFile({
     filename: path.join(logDir, "access-%DATE%.log"),
     datePattern: "YYYY-MM-DD",
@@ -18,6 +18,7 @@ if (process.env.NODE_ENV === "development") {
     maxFiles: "7d",
     zippedArchive: false,
   });
+  
 
   const httpLogger = winston.createLogger({
     transports: [accessFileTransport],
@@ -32,6 +33,10 @@ if (process.env.NODE_ENV === "development") {
   };
 
   morganMiddleware = morgan("combined", { stream });
+}
+
+else {
+  morganMiddleware = (req, res, next) => next();
 }
 
 export default morganMiddleware;

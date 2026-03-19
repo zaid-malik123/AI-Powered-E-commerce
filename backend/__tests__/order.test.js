@@ -12,15 +12,18 @@ const mailService = await import("../src/services/mail.service.js");
 
 const { default: app } = await import("../src/app.js");
 
+// ✅ normal imports (ONLY ONCE)
 import request from "supertest";
 import {
   connect,
   clearDatabase,
   closeDatabase,
-} from "../testUtils/setupTestDb.helper.js";
+} from "../src/testUtils/setupTestDb.helper.js";
 
+// env
 process.env.JWT_SECRET = process.env.JWT_SECRET || "testsecret";
 
+// models
 const { default: User } = await import("../src/models/user.model.js");
 const { default: Product } = await import("../src/models/product.model.js");
 const { genToken } = await import("../src/config/genToken.js");
