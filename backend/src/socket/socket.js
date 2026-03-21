@@ -36,6 +36,10 @@ export const initSocket = (httpServer) => {
 
   io.on("connection", (socket) => {
 
+    const userId = socket.user.userId;
+
+     socket.join(userId.toString());
+
     socket.on("message", async (data) => {
 
      const aiResponse = await app.invoke(

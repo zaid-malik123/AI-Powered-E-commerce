@@ -124,6 +124,13 @@ export const updateOrderStatus = async (req, res) => {
     order.orderStatus = status;
     await order.save();
 
+    const io = req.app.get("io")
+
+    io.to(order.user.toString()).emit("orderStatusUpdate", {
+      orderId: order._id,
+      status: status
+    })
+
     return res.status(200).json({
       success: true,
       message: "Order status updated successfully",
