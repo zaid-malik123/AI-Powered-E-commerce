@@ -60,5 +60,7 @@ export const initSocket = (httpServer) => {
     socket.on("disconnect", () => {
       console.log("A user disconnected");
     });
+
   });
+  return io;
 };  

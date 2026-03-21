@@ -129,6 +129,7 @@ export const updateOrderStatus = async (req, res) => {
       message: "Order status updated successfully",
       order,
     });
+    
   } catch (error) {
     logger.error(`Error in update order status : ${error.message}`);
     console.error("Update Order Status Error:", error);
