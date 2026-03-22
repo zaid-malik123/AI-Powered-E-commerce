@@ -1,9 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { socket } = useSelector((state) => state.userSlice);
 
   const fetchUserOrders = async () => {
     try {
@@ -13,7 +16,6 @@ const MyOrders = () => {
         `${import.meta.env.VITE_BASE_URL}/api/order/`,
         { withCredentials: true },
       );
-
       setOrders(res.data.orders || []);
     } catch (error) {
       console.log(error);
@@ -25,6 +27,27 @@ const MyOrders = () => {
   useEffect(() => {
     fetchUserOrders();
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handler = (data) => {
+      console.log("DATA RECIEVED IN HANDLER ", data)
+      setOrders((prevOrders) =>
+        prevOrders.map((order) => 
+          order._id === data.orderId
+            ? { ...order, orderStatus: data.status }
+            : order,
+        ),
+      );
+    };
+
+    socket.on("orderStatusUpdate", handler);
+
+    return () => {
+      socket.off("orderStatusUpdate", handler);
+    };
+  }, [socket]);
 
   return (
     <div className="w-full min-h-screen bg-white px-6 py-8">
@@ -81,10 +104,10 @@ const MyOrders = () => {
                 <div className="flex flex-col md:items-end gap-2 text-sm">
                   <div className="flex items-center gap-2 text-green-600">
                     <span className="w-2 h-2 rounded-full bg-green-600"></span>
-                    {order.status || "Processing"}
+                    {order.orderStatus || "Processing"}
                   </div>
 
-                   <div className="flex items-center gap-2 text-blue-600">
+                  <div className="flex items-center gap-2 text-blue-600">
                     <span className="w-2 h-2 rounded-full bg-blue-600"></span>
                     {order.paymentMethod || "Processing"}
                   </div>

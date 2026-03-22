@@ -12,7 +12,6 @@ const Orders = () => {
         `${import.meta.env.VITE_BASE_URL}/api/order/all`,
         { withCredentials: true }
       );
-
       setOrders(data.orders);
     } catch (error) {
       console.log(error);

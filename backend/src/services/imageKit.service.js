@@ -6,7 +6,6 @@ var imagekit = new ImageKit({
   privateKey: process.env.IMAGE_KIT_PRIVATEKEY,
   urlEndpoint: process.env.IMAGE_KIT_URL,
 });
-console.log(process.env.IMAGE_KIT_PUBLICKEY)
 
 export const uploadImage = (img) => {
   return new Promise((resolve, reject) => {

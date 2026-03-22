@@ -12,7 +12,6 @@ const ListItems = () => {
         withCredentials: true
       });
 
-      console.log(res.data)
       setProducts(res.data);
     } catch (error) {
       console.error("Error fetching products", error);
