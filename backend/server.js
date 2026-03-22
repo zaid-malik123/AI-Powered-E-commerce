@@ -3,6 +3,7 @@ import {config} from "dotenv"
 import { connectDb } from "./src/db/db.js";
 import http from "http"
 import { initSocket } from "./src/socket/socket.js";
+import {redis} from "./src/config/redis.js"
 
 config()
 
