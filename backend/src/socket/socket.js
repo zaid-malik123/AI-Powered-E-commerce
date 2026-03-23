@@ -38,7 +38,6 @@ export const initSocket = (httpServer) => {
 
     const userId = socket.user.userId;
 
-    console.log("SOCKET USER ", socket.user)
 
     socket.on("message", async (data) => {
 

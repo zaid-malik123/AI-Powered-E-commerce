@@ -3,6 +3,32 @@ import { uploadImage } from "../services/imageKit.service.js";
 import { generateVector } from "../config/createVector.js";
 import { index } from "../services/pincone.service.js";
 import logger from "../config/winston.js";
+import {redis} from "../config/redis.js"
+
+const generateCacheKey = (query) => {
+  const {
+    category = "",
+    subCategory = "",
+    q = "",
+    page = 1,
+    limit = 30,
+    minPrice = "",
+    maxPrice = "",
+  } = query;
+
+  return `products:${category}:${subCategory}:${q}:${page}:${limit}:${minPrice}:${maxPrice}`;
+};
+
+const shouldCache = (query) => {
+  const { q, page = 1, minPrice, maxPrice } = query;
+
+  return (
+    !q && // search nahi
+    Number(page) === 1 && // first page only
+    !minPrice &&
+    !maxPrice
+  );
+};
 
 export const createProductController = async (req, res) => {
   try {
@@ -83,21 +109,32 @@ export const getAllProducts = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   try {
+    const cacheKey = generateCacheKey(req.query);
+    const canCache = shouldCache(req.query);
+
+    if (canCache) {
+      const cached = await redis.get(cacheKey);
+
+      if (cached) {
+        console.log("CACHE HIT 🔥");
+        return res.json(JSON.parse(cached));
+      }
+    }
+
+    console.log("CACHE MISS ❌");
+
     const { category, subCategory, q, page = 1, limit = 30, minPrice, maxPrice } = req.query;
 
     const filter = {};
 
-    // Category filter
     if (category) {
       filter.category = { $in: category.split(",") };
     }
 
-    // Subcategory filter
     if (subCategory) {
       filter.subCategory = { $in: subCategory.split(",") };
     }
 
-    // Search filter
     if (q) {
       filter.$or = [
         { name: { $regex: q, $options: "i" } },
@@ -105,17 +142,10 @@ export const getProducts = async (req, res) => {
       ];
     }
 
-    // 💰 Price filter (IMPORTANT PART)
     if (minPrice || maxPrice) {
       filter.price = {};
-
-      if (minPrice) {
-        filter.price.$gte = Number(minPrice);
-      }
-
-      if (maxPrice) {
-        filter.price.$lte = Number(maxPrice);
-      }
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
 
     const skip = (page - 1) * limit;
@@ -127,18 +157,25 @@ export const getProducts = async (req, res) => {
 
     const total = await Product.countDocuments(filter);
 
-    res.status(200).json({
+    const response = {
       success: true,
       total,
       currentPage: Number(page),
       totalPages: Math.ceil(total / limit),
       products,
-    });
+    };
+
+    // ✅ 2. Cache save (only useful queries)
+    if (canCache) {
+      await redis.set(cacheKey, JSON.stringify(response), "EX", 60);
+    }
+
+    return res.json(response);
 
   } catch (error) {
     console.log(error);
     logger.error(`Error in getProducts: ${error.message}`);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Server error",
     });
@@ -148,6 +185,15 @@ export const getProducts = async (req, res) => {
 export const getSingleProduct = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const cacheKey = `product:${id}`;
+
+    const cached = await redis.get(cacheKey);
+
+    if (cached) {
+      console.log("CACHE HIT 🔥");
+      return res.json(JSON.parse(cached));
+    }
 
     if (!id) {
       return res.status(400).json({ message: "Product id required" });
@@ -159,10 +205,17 @@ export const getSingleProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    return res.status(200).json({
+    console.log("CACHE MISS ❌");
+
+    const response = {
       success: true,
       product,
-    });
+    };
+
+    await redis.set(cacheKey, JSON.stringify(response), "EX", 120);
+
+    return res.status(200).json(response);
+
   } catch (error) {
     console.log(error);
     logger.error(`Error in getSingleProduct: ${error.message}`);
