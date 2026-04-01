@@ -9,7 +9,7 @@ import { SystemMessage } from "@langchain/core/messages";
 
 const searchProductsTool = tool(
   async ({ query, minPrice, maxPrice }) => {
-    try {
+    try { 
       const response = await axios.get(
         `${process.env.SERVER_URL}/api/product/filter`,
         {
