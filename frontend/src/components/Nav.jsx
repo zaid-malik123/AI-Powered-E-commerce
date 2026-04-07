@@ -7,16 +7,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { setUser } from "../redux/features/userSlice";
+import { setLoading, setUser } from "../redux/features/userSlice";
 import { useLocation } from "react-router-dom";
-import { RxCross1 } from "react-icons/rx";
+// import { RxCross1 } from "react-icons/rx";
 import { IoChevronBack } from "react-icons/io5";
 
 const Nav = () => {
-  const [/*searchOpen*/, setSearchOpen] = useState(false);
+  // const [/*searchOpen*/, setSearchOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profile, setProfile] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
+  // const [searchResults, setSearchResults] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -24,8 +24,6 @@ const Nav = () => {
   const { cart } = useSelector((state) => state.cartSlice);
 
   useEffect(() => {
-    // keep internal searchOpen in sync with URL if needed in future
-    // currently we rely on URL param `search=1` to indicate open state
   }, []);
   const logoutHandler = async () => {
     await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/logout`, {
@@ -229,7 +227,8 @@ const Nav = () => {
               </button>
             ) : (
               <div
-                onClick={logoutHandler}
+
+                onClick={() => (logoutHandler(), setLoading(false))}
                 className="text-red-600 font-semibold ml-2 cursor-pointer"
               >
                 Log Out

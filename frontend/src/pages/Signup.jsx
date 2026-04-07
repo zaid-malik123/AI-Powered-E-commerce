@@ -5,7 +5,7 @@ import {signupform} from "../validator/formValidator"
 import axios from "axios"
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { setUser } from "../redux/features/userSlice";
+import { setLoading, setUser } from "../redux/features/userSlice";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -28,6 +28,7 @@ const Signup = () => {
         { withCredentials: true }
       );
       dispatch(setUser(res.data));
+      dispatch(setLoading(true))
       // optionally navigate after signup
       navigate("/");
     } catch (err) {

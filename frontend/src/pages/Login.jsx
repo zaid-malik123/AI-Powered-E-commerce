@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginform } from "../validator/formValidator";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setUser } from "../redux/features/userSlice";
+import { setLoading, setUser } from "../redux/features/userSlice";
 import { toast } from "react-toastify";
 const Login = () => {
   const navigate = useNavigate();
@@ -28,6 +28,7 @@ const Login = () => {
         { withCredentials: true }
       );
       dispatch(setUser(res.data));
+      dispatch(setLoading(true))
 
       // merge guest cart
       try {

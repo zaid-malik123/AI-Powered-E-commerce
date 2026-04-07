@@ -15,6 +15,7 @@ import { useLocation } from "react-router-dom";
 const App = () => {
   const dispatch = useDispatch()
   const { user, socket } = useSelector((state) => state.userSlice);
+
   useGetCurrentUser();
 
   const { fetchCart } = useCart();
