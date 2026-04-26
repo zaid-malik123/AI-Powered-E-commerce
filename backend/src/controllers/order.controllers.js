@@ -131,8 +131,6 @@ export const updateOrderStatus = async (req, res) => {
       status: status
     })
 
-    console.log("THIS IS EVENT TRIGGER IN BACKEND")
-
     return res.status(200).json({
       success: true,
       message: "Order status updated successfully",

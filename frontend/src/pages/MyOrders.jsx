@@ -33,7 +33,6 @@ const MyOrders = () => {
     if (!socket) return;
 
     const handler = (data) => {
-      console.log("DATA RECIEVED IN HANDLER ", data)
       setOrders((prevOrders) =>
         prevOrders.map((order) => 
           order._id === data.orderId

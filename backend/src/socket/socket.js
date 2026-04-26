@@ -38,6 +38,10 @@ export const initSocket = (httpServer) => {
 
     const userId = socket.user.userId;
 
+    if (userId) {
+      socket.join(userId);
+    }
+
 
     socket.on("message", async (data) => {
 
