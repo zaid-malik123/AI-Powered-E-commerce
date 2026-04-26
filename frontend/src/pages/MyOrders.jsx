@@ -16,6 +16,7 @@ const MyOrders = () => {
         `${import.meta.env.VITE_BASE_URL}/api/order/`,
         { withCredentials: true },
       );
+      console.log(res.data)
       setOrders(res.data.orders || []);
     } catch (error) {
       console.log(error);

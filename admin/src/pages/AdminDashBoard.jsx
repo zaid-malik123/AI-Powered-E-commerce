@@ -4,9 +4,13 @@ import AdminNav from "../components/AdminNav";
 import AddItems from "../components/AddItems";
 import ListItems from "../components/ListItems";
 import Orders from "../components/Orders";
+import { useContext } from "react";
+import { AdminUserContext } from "../context/AdminUserContext";
 
 const AdminDashBoard = () => {
   const [active, setActive] = useState("add");
+
+  // const {user} = useContext(AdminUserContext)
 
   const renderContent = () => {
     switch (active) {

@@ -225,7 +225,6 @@ async function agentNode(state) {
 
 const toolNode = async (state, config) => {
   const lastMessage = state.messages[state.messages.length - 1];
-  console.log("THIS IS MESSGAE " , lastMessage)
   if (!lastMessage.tool_calls?.length) {
     return state;
   }

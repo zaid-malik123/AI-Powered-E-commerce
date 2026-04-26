@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AdminUserContext } from "../context/AdminUserContext";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -8,6 +10,7 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const {setUser} = useContext(AdminUserContext)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +23,8 @@ const AdminLogin = () => {
         { email, password },
         { withCredentials: true }
       );
+
+      setUser(res.data.user)
       if (res.data.success) {
         // redirect to admin dashboard or wherever
         navigate("/");
