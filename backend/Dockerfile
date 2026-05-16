@@ -19,6 +19,6 @@ RUN npm install --only=production
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/server.js ./
 
-EXPOSE 3000
+EXPOSE 4000
 
 CMD ["node", "server.js"]

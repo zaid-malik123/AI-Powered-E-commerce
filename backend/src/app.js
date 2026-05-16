@@ -19,8 +19,14 @@ import PaymentRoutes from "./routes/payment.routes.js"
 const app = express()
 
 app.use(cors({
-  origin: ["https://outfit-ta1g.onrender.com", "https://e-commerce-1-67wh.onrender.com", "http://localhost:5174", "http://localhost:5173"],
-  credentials: true, 
+  origin: [
+    "https://outfit-ta1g.onrender.com",
+    "https://e-commerce-1-67wh.onrender.com",
+    "http://localhost:5174",
+    "http://localhost:5173",
+    "http://localhost:3000"
+  ],
+  credentials: true,
 }));
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
