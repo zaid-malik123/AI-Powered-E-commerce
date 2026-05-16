@@ -124,12 +124,19 @@ export const updateOrderStatus = async (req, res) => {
     order.orderStatus = status;
     await order.save();
 
-    const io = req.app.get("io")
+    const io = req.app.get("io");
 
-    io.to(order.user.toString()).emit("orderStatusUpdate", {
-      orderId: order._id,
-      status: status
-    })
+    // emit only if io is available (in tests it may not be set)
+    if (io && typeof io.to === "function" && order.user) {
+      try {
+        io.to(order.user.toString()).emit("orderStatusUpdate", {
+          orderId: order._id,
+          status: status,
+        });
+      } catch (emitErr) {
+        logger.error("Failed to emit orderStatusUpdate", emitErr.message);
+      }
+    }
 
     return res.status(200).json({
       success: true,

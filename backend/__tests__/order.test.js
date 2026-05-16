@@ -75,6 +75,7 @@ describe("Order API", () => {
     subCategory: "Topwear",
     price: 50,
     sizes: ["M"],
+    image: ["https://via.placeholder.com/150"],
   };
 
   it("creates an order (COD) and updates product totalSold", async () => {
