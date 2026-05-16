@@ -1,24 +1,26 @@
-FROM node:18 AS builder
-
+# --- STAGE 1: Build Stage ---
+FROM node:20-alpine AS builder
 WORKDIR /app
 
+# Dependency files copy karo taaki caching ka fayda mile
 COPY package*.json ./
+RUN npm ci
 
-RUN npm install
-
+# Baaki saara frontend code copy karo
 COPY . .
 
+# Vite production build generate karega (jo 'dist' folder banayega)
 RUN npm run build
 
+# --- STAGE 2: Production Stage (Nginx) ---
+FROM nginx:alpine AS runner
 
-FROM node:18-alpine
+# Vite ka output 'dist' folder me aata hai, use Nginx ke webroot me copy karo
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-WORKDIR /app
+# Custom nginx configuration copy karo jo React Router ko handle karegi
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-RUN npm install -g serve
+EXPOSE 80
 
-COPY --from=builder /app/dist ./dist
-
-EXPOSE 8000
-
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["nginx", "-g", "daemon off;"]
