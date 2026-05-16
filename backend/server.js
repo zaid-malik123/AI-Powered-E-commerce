@@ -5,6 +5,7 @@ import http from "http"
 import { initSocket } from "./src/socket/socket.js";
 import {redis} from "./src/config/redis.js"
 
+
 config()
 
 const port = process.env.PORT;
